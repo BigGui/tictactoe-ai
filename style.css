@@ -24,13 +24,16 @@ ul, li {
     width: calc(100vmin - 4rem);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: 1rem;
     margin: 0 auto;
     background-color: lightskyblue;
-
+    font-size:4rem;
 }
 
 .grid > li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     aspect-ratio: 1 / 1;
     background-color: white;
 }
