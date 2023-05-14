@@ -19,7 +19,7 @@ function getNewCell(rowIndex, colIndex) {
 
 
 // -------------
-// SCRIPTS
+// SCRIPT
 // -------------
 
 const grid = [
@@ -34,4 +34,10 @@ grid.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
         gridElement.appendChild(getNewCell(rowIndex, colIndex));
     });
+});
+
+gridElement.addEventListener('click', function(event) {
+    if (event.target.tagName !== 'LI') return;
+
+    console.log('Click on a cell !');
 });
