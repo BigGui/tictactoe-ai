@@ -10,7 +10,7 @@
  * @param {number} colIndex - The column number of the cell
  * @returns The new LI element to display a cell grid
  */
-function createCell(rowIndex, colIndex) {
+function getNewCell(rowIndex, colIndex) {
     const li = document.createElement('li');
     li.id = `cell${rowIndex}-${colIndex}`;
     return li;
@@ -32,6 +32,6 @@ const gridElement = document.getElementById('grid');
 
 grid.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
-        gridElement.appendChild(createCell(rowIndex, colIndex));
+        gridElement.appendChild(getNewCell(rowIndex, colIndex));
     });
 });
