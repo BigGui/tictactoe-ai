@@ -30,8 +30,9 @@ const grid = [
 
 const gridElement = document.getElementById('grid'); 
 
-const player1Symbol = '⭕';
-const player2Symbol = '❌';
+let roundCounter = 0;
+
+const playersSymbol = ['⭕', '❌'];
 
 grid.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
@@ -43,6 +44,7 @@ gridElement.addEventListener('click', function(event) {
     if (event.target.tagName !== 'LI') return;
 
     if (event.target.innerText !== '') return;
-    event.target.innerText = player1Symbol;
-    console.log('Click on a cell !');
+    event.target.innerText = playersSymbol[roundCounter%2];
+
+    roundCounter++;
 });
