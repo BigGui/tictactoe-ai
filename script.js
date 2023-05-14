@@ -12,7 +12,6 @@
  */
 function getNewCell(rowIndex, colIndex) {
     const li = document.createElement('li');
-    li.id = `cell${rowIndex}-${colIndex}`;
     li.setAttribute('data-row', rowIndex);
     li.setAttribute('data-col', colIndex);
     return li;
@@ -69,6 +68,38 @@ function addPlayerToCell(row, col, playerNb) {
 }
 
 
+/**
+ * Execute an action on the grid
+ * 
+ * @param {event} event - A click event on the grid
+ * @returns 
+ */
+function play(event) {
+
+    const el = event.target;
+
+    // Is the click fires on cell ?
+    if (el.tagName !== 'LI') return;
+
+    const playerNb = roundCounter%2;
+    const coord = [el.dataset.row, el.dataset.col];
+
+    // Is te cell empty ?
+    if (el.innerText !== '' || !isCellFree(coord[0], coord[1])) return;
+
+    // Add the symbol associated to the current player
+    el.innerText = playerSymbols[playerNb];
+    addPlayerToCell(coord[0], coord[1], playerNb);
+
+    if (isGameOver()) {
+        gridElement.removeEventListener('click', play);
+        return;
+    }
+
+    roundCounter++;
+}
+
+
 // -------------
 // SCRIPT
 // -------------
@@ -83,7 +114,7 @@ const gridElement = document.getElementById('grid');
 
 let roundCounter = 0;
 
-const playersSymbol = ['⭕', '❌'];
+const playerSymbols = ['⭕', '❌'];
 
 grid.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
@@ -91,24 +122,4 @@ grid.forEach((row, rowIndex) => {
     });
 });
 
-gridElement.addEventListener('click', function(event) {
-
-    const el = event.target;
-
-    // Is the click fires on cell ?
-    if (el.tagName !== 'LI') return;
-
-    const playerNb = roundCounter%2;
-    const coord = [el.dataset.row, el.dataset.col];
-
-    // Is te cell empty ?
-    if (el.innerText !== '' || !isCellFree(coord[0], coord[1])) return;
-
-    // Add the symbol associated to the current player
-    el.innerText = playersSymbol[playerNb];
-    addPlayerToCell(coord[0], coord[1], playerNb);
-
-    console.log(isGameOver());
-
-    roundCounter++;
-});
+gridElement.addEventListener('click', play);
