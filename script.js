@@ -71,24 +71,22 @@ function isArrayFullAndRegular(array) {
 /**
  * Indicate if a cell is free.
  * 
- * @param {number} row - The row number of the cell
- * @param {number} col - The column number of the cell
+ * @param {array} coord - The row number and column number of the cell [row, column]
  * @returns {boolean} Is the game over ?
  */
-function isCellFree(row, col) {
-    return grid[row][col] === '';
+function isCellFree(coord) {
+    return grid[coord[0]][coord[1]] === '';
 }
 
 
 /**
  * Add a player number to a cell.
  * 
- * @param {number} row - The row number of the cell
- * @param {number} col - The column number of the cell
+ * @param {array} coord - The row number and column number of the cell [row, column]
  * @param {number} playerNb - The player number [0 | 1]
  */
-function addPlayerToCell(row, col, playerNb) {
-    grid[row][col] = playerNb;
+function addPlayerToCell(coord, playerNb) {
+    grid[coord[0]][coord[1]] = playerNb;
 }
 
 
@@ -108,11 +106,11 @@ function play(event) {
     const coord = [el.dataset.row, el.dataset.col];
 
     // Is this cell empty ?
-    if (!isCellFree(coord[0], coord[1])) return;
+    if (!isCellFree(coord)) return;
 
     // Add the symbol associated to the current player
     el.innerText = playerSymbols[playerNb];
-    addPlayerToCell(coord[0], coord[1], playerNb);
+    addPlayerToCell(coord, playerNb);
 
     if (isGameOver()) {
         el.parentElement.removeEventListener('click', play);
