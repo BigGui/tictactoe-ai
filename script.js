@@ -106,13 +106,27 @@ function play(event) {
 
     if (isGameOver()) {
         el.parentElement.removeEventListener('click', play);
-        document.getElementById('info').innerText = 'GAME OVER'
+        document.getElementById('info').innerText = 'GAME OVER ';
+        document.getElementById('info').appendChild(createStartButton());
         return;
     }
 
     roundCounter++;
 
     displayCurrentPlayer();
+}
+
+
+/**
+ * Create a button to click on in order to start a new game.
+ * 
+ * @returns {element} The button element to start a new game..
+ */
+function createStartButton() {
+    const btn = document.createElement('button');
+    btn.innerText = 'Start new game';
+    btn.addEventListener('click', initializeGame);
+    return btn;
 }
 
 
@@ -144,8 +158,11 @@ function initializeGame() {
     ];
     roundCounter = 0;
 
+    document.getElementById('info').innerText = '';
+
     const gridElement = document.getElementById('grid'); 
 
+    emptyElement(gridElement);
     grid.forEach((row, rowIndex) => {
         row.forEach((cell, colIndex) => {
             gridElement.appendChild(getNewCell(rowIndex, colIndex));
@@ -153,6 +170,16 @@ function initializeGame() {
     });
     
     gridElement.addEventListener('click', play);
+}
+
+
+/**
+ * Removes all the child of the given element.
+ * 
+ * @param {element} element - The element to empty. 
+ */
+function emptyElement(element) {
+    while(element.firstChild) element.firstChild.remove();
 }
 
 // -------------
