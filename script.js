@@ -19,6 +19,22 @@ function getNewCell(rowIndex, colIndex) {
 
 
 /**
+ * Indicate if the grid is completly full.
+ * 
+ * @returns {boolean} Is the grid full ?
+ */
+function isGridFull() {
+    let isFull = true;
+
+    grid.forEach(row => {
+        if (row.includes('')) isFull = false;
+    });
+
+    return isFull;
+}
+
+
+/**
  * Indicate if a player win the game.
  * 
  * @returns {boolean} Is the game over ?
@@ -32,6 +48,8 @@ function isGameOver() {
         (grid[1][1] !== '' && grid[1][1] === grid[0][0] && grid[1][1] === grid[2][2])
         ||
         (grid[1][1] !== '' && grid[1][1] === grid[0][2] && grid[1][1] === grid[2][0])
+        ||
+        isGridFull()
     );
 }
 
@@ -43,7 +61,7 @@ function isGameOver() {
  * @returns {boolean} Is this row finish the game ?
  */
 function isRowWin(rowNumber) {
-    return grid[rowNumber][0] !== '' && grid[rowNumber][0] === grid[rowNumber][1] && grid[rowNumber][0] === grid[rowNumber][2];
+    return isArrayFullAndRegular(grid[rowNumber]);
 }
 
 
@@ -54,7 +72,18 @@ function isRowWin(rowNumber) {
  * @returns {boolean} Is this column finish the game ?
  */
 function isColWin(colNumber) {
-    return grid[0][colNumber] !== '' && grid[0][colNumber] === grid[1][colNumber] && grid[0][colNumber] === grid[2][colNumber];
+    return isArrayFullAndRegular(grid.map(row => row[colNumber]));
+}
+
+
+/**
+ * Indicates if the array given has been filled with the same value.
+ * 
+ * @param {array} array - The array to analyze
+ * @returns {boolean} Result of the analysis ?
+ */
+function isArrayFullAndRegular(array) {
+    return !array.includes('') && Math.min(...array) === Math.max(...array);
 }
 
 
