@@ -24,13 +24,7 @@ function getNewCell(rowIndex, colIndex) {
  * @returns {boolean} Is the grid full ?
  */
 function isGridFull() {
-    let isFull = true;
-
-    grid.forEach(row => {
-        if (row.includes('')) isFull = false;
-    });
-
-    return isFull;
+    return grid.flat().every(v => v !== '');
 }
 
 
@@ -70,7 +64,7 @@ function isGameOver() {
  * @returns {boolean} Result of the analysis ?
  */
 function isArrayFullAndRegular(array) {
-    return !array.includes('') && Math.min(...array) === Math.max(...array);
+    return array.every(v => v !== '' && v === array[0]);
 }
 
 
@@ -94,7 +88,7 @@ function isCellFree(row, col) {
  * @param {number} playerNb - The player number [0 | 1]
  */
 function addPlayerToCell(row, col, playerNb) {
-    return grid[row][col] = playerNb;
+    grid[row][col] = playerNb;
 }
 
 
