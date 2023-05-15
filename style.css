@@ -18,10 +18,15 @@ ul, li {
     text-align: center;
 }
 
+.info {
+    height: 2rem;
+    text-align: center;
+}
+
 /* GRID */
 
 .grid {
-    width: calc(100vmin - 4rem);
+    width: calc(100vmin - 6rem);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;

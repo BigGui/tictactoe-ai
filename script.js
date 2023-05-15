@@ -69,13 +69,12 @@ function addPlayerToCell(row, col, playerNb) {
 
 
 /**
- * Execute an action on the grid
+ * Execute a player action on the grid.
  * 
- * @param {event} event - A click event on the grid
- * @returns 
+ * @param {event} event - A click event on the grid.
+ * @returns void
  */
 function play(event) {
-
     const el = event.target;
 
     // Is the click fires on cell ?
@@ -84,7 +83,7 @@ function play(event) {
     const playerNb = roundCounter%2;
     const coord = [el.dataset.row, el.dataset.col];
 
-    // Is te cell empty ?
+    // Is this cell empty ?
     if (el.innerText !== '' || !isCellFree(coord[0], coord[1])) return;
 
     // Add the symbol associated to the current player
@@ -93,10 +92,21 @@ function play(event) {
 
     if (isGameOver()) {
         gridElement.removeEventListener('click', play);
+        document.getElementById('info').innerText = 'GAME OVER'
         return;
     }
 
     roundCounter++;
+
+    displayCurrentPlayer();
+}
+
+
+/**
+ * Display which player's turn it is.
+ */
+function displayCurrentPlayer() {
+    document.getElementById('info').innerText = `Joueur N°${roundCounter%2 + 1} ${playerSymbols[roundCounter%2]}`;
 }
 
 
