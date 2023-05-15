@@ -80,11 +80,11 @@ function play(event) {
     // Is the click fires on cell ?
     if (el.tagName !== 'LI') return;
 
-    const playerNb = roundCounter%2;
+    const playerNb = getPlayerNumber();
     const coord = [el.dataset.row, el.dataset.col];
 
     // Is this cell empty ?
-    if (el.innerText !== '' || !isCellFree(coord[0], coord[1])) return;
+    if (!isCellFree(coord[0], coord[1])) return;
 
     // Add the symbol associated to the current player
     el.innerText = playerSymbols[playerNb];
@@ -106,7 +106,17 @@ function play(event) {
  * Display which player's turn it is.
  */
 function displayCurrentPlayer() {
-    document.getElementById('info').innerText = `Joueur N°${roundCounter%2 + 1} ${playerSymbols[roundCounter%2]}`;
+    document.getElementById('info').innerText = `Joueur N°${getPlayerNumber() + 1} ${playerSymbols[getPlayerNumber()]}`;
+}
+
+
+/**
+ * who's turn ?
+ * 
+ * @return {number} The player number who play.
+ */
+function getPlayerNumber() {
+    return roundCounter%2;
 }
 
 
