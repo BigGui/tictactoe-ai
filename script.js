@@ -105,7 +105,7 @@ function play(event) {
     addPlayerToCell(coord[0], coord[1], playerNb);
 
     if (isGameOver()) {
-        gridElement.removeEventListener('click', play);
+        el.parentElement.removeEventListener('click', play);
         document.getElementById('info').innerText = 'GAME OVER'
         return;
     }
@@ -133,27 +133,35 @@ function getPlayerNumber() {
     return roundCounter%2;
 }
 
+/**
+ * Start a game
+ */
+function initializeGame() {
+    grid = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ];
+    roundCounter = 0;
+
+    const gridElement = document.getElementById('grid'); 
+
+    grid.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+            gridElement.appendChild(getNewCell(rowIndex, colIndex));
+        });
+    });
+    
+    gridElement.addEventListener('click', play);
+}
 
 // -------------
 // SCRIPT
 // -------------
 
-const grid = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', '']
-];
-
-const gridElement = document.getElementById('grid'); 
-
-let roundCounter = 0;
+let grid,
+    roundCounter;
 
 const playerSymbols = ['⭕', '❌'];
 
-grid.forEach((row, rowIndex) => {
-    row.forEach((cell, colIndex) => {
-        gridElement.appendChild(getNewCell(rowIndex, colIndex));
-    });
-});
-
-gridElement.addEventListener('click', play);
+initializeGame();
