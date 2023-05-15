@@ -25,22 +25,36 @@ function getNewCell(rowIndex, colIndex) {
  */
 function isGameOver() {
     return (
-        (grid[0][0] !== '' && grid[0][0] === grid[0][1] && grid[0][0] === grid[0][2])
+        isRowWin(0) || isRowWin(1) || isRowWin(2)
         ||
-        (grid[1][0] !== '' && grid[1][0] === grid[1][1] && grid[1][0] === grid[1][2])
-        ||
-        (grid[2][0] !== '' && grid[2][0] === grid[2][1] && grid[2][0] === grid[2][2])
-        ||
-        (grid[0][0] !== '' && grid[0][0] === grid[1][0] && grid[0][0] === grid[2][0])
-        ||
-        (grid[0][1] !== '' && grid[0][1] === grid[1][1] && grid[0][1] === grid[2][1])
-        ||
-        (grid[0][2] !== '' && grid[0][2] === grid[1][2] && grid[0][2] === grid[2][2])
+        isColWin(0) || isColWin(1) || isColWin(2)
         ||
         (grid[1][1] !== '' && grid[1][1] === grid[0][0] && grid[1][1] === grid[2][2])
         ||
         (grid[1][1] !== '' && grid[1][1] === grid[0][2] && grid[1][1] === grid[2][0])
     );
+}
+
+
+/**
+ * Indicate if a row win the game.
+ * 
+ * @param {number} rowNumber - Is this row win the game ?
+ * @returns {boolean} Is this row finish the game ?
+ */
+function isRowWin(rowNumber) {
+    return grid[rowNumber][0] !== '' && grid[rowNumber][0] === grid[rowNumber][1] && grid[rowNumber][0] === grid[rowNumber][2];
+}
+
+
+/**
+ * Indicate if a column win the game.
+ * 
+ * @param {number} colNumber - Is this column win the game ?
+ * @returns {boolean} Is this column finish the game ?
+ */
+function isColWin(colNumber) {
+    return grid[0][colNumber] !== '' && grid[0][colNumber] === grid[1][colNumber] && grid[0][colNumber] === grid[2][colNumber];
 }
 
 
