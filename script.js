@@ -172,14 +172,26 @@ function initializeGame() {
 
     const gridElement = document.getElementById('grid'); 
 
+    // Remove all existing elements in the grid
     emptyElement(gridElement);
+
+    // Create all the need LI in the grid
+    fulfillGrid(gridElement);
+    
+    // Add the event listener on the grid to give players the ability to play
+    gridElement.addEventListener('click', play);
+}
+
+
+/**
+ * Create every LI elements needed in the grid
+ */
+function fulfillGrid(gridElement) {
     grid.forEach((row, rowIndex) => {
         row.forEach((cell, colIndex) => {
             gridElement.appendChild(getNewCell(rowIndex, colIndex));
         });
     });
-    
-    gridElement.addEventListener('click', play);
 }
 
 
