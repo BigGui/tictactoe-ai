@@ -40,39 +40,26 @@ function isGridFull() {
  * @returns {boolean} Is the game over ?
  */
 function isGameOver() {
+    const diagonals = [[], []];
+
+    // Analyze rows and columns
+    for (const i in grid) {
+        if (isArrayFullAndRegular(grid[i])) return true;
+        
+        if (isArrayFullAndRegular(grid.map(row => row[i]))) return true;
+
+        // Aggregate values from diagonals
+        diagonals[0].push(grid[i][i]);
+        diagonals[1].push(grid[i][grid.length - i]);
+    }
+
     return (
-        isRowWin(0) || isRowWin(1) || isRowWin(2)
+        isArrayFullAndRegular(diagonals[0])
         ||
-        isColWin(0) || isColWin(1) || isColWin(2)
-        ||
-        (grid[1][1] !== '' && grid[1][1] === grid[0][0] && grid[1][1] === grid[2][2])
-        ||
-        (grid[1][1] !== '' && grid[1][1] === grid[0][2] && grid[1][1] === grid[2][0])
+        isArrayFullAndRegular(diagonals[1])
         ||
         isGridFull()
     );
-}
-
-
-/**
- * Indicate if a row win the game.
- * 
- * @param {number} rowNumber - Is this row win the game ?
- * @returns {boolean} Is this row finish the game ?
- */
-function isRowWin(rowNumber) {
-    return isArrayFullAndRegular(grid[rowNumber]);
-}
-
-
-/**
- * Indicate if a column win the game.
- * 
- * @param {number} colNumber - Is this column win the game ?
- * @returns {boolean} Is this column finish the game ?
- */
-function isColWin(colNumber) {
-    return isArrayFullAndRegular(grid.map(row => row[colNumber]));
 }
 
 
