@@ -1,0 +1,7 @@
+{
+    "name": "titoctoe-ai",
+    "version": "0.0.1",
+    "description": "Neuronal network for TicTocToe",
+    "main": "script.js",
+    "type": "module"
+}
