@@ -1,3 +1,5 @@
+import { Brain } from "./class/brain.js";
+import { Layer } from "./class/layer.js";
 
 // -------------
 // FUNCTIONS
@@ -212,3 +214,13 @@ let grid,
 const playerSymbols = ['⭕', '❌'];
 
 initializeGame();
+
+const brain = new Brain();
+console.log(brain);
+
+function testBrain(){
+    const a = brain.askAnswer([1, .6, .4, .6, .4, .9, .8, .7, .7]);
+    a.then(a => console.log(a));
+}
+
+testBrain();
