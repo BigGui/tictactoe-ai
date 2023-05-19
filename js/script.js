@@ -108,7 +108,6 @@ function playAI() {
 
             counterAILoop++;
             // Avoid looping in a trap
-            console.log('free cell loop: ', counterAILoop);
             if (counterAILoop > 100) coord = getRandomFreeCell();
 
             // The cell picked by AI is not empty
@@ -280,8 +279,8 @@ function initializeGame() {
     gamingLog = [];
 
     // Define the player number of AI
-    // aiNumber = Math.floor(Math.random() * 2);
-    aiNumber = 1;
+    aiNumber = Math.floor(Math.random() * 2);
+    // aiNumber = 1;
 
     playerSymbols.fill('☺️');
     playerSymbols[aiNumber] = '🤖';
@@ -394,7 +393,6 @@ async function learnWinnerLog(winner) {
 async function learnDatas(datas) {
     let learningTotal = 0;
     let learningOK = 0;
-    console.log('starting learn process');
     for (const data of datas) {
         const output = await brain.learnData(data.input, data.expectedOutput);
         learningCounter++;
@@ -402,10 +400,8 @@ async function learnDatas(datas) {
         if (getArrayMaxIndex(output) === getArrayMaxIndex(data.expectedOutput)) {
             learningOK++;
         }
-        // console.log(getArrayMaxIndex(output), getArrayMaxIndex(data.expectedOutput));
     }
-    console.log('learn process is over');
-    console.log(learningOK / learningTotal * 100);
+    displayLearnMessage(`ratio ${Math.round(learningOK / learningTotal * 100)}%`);
     document.getElementById('learn-count').innerText = learningCounter;
 }
 
@@ -435,6 +431,11 @@ function retrieveDatasToLearnFromStorage() {
 }
 
 
+function displayLearnMessage(message) {
+    document.getElementById('learnMsg').innerText = message;
+}
+
+
 // -------------
 // SCRIPT
 // -------------
@@ -447,7 +448,6 @@ let grid,
     counterAILoop = 0;
 
 let datasToLearn = retrieveDatasToLearnFromStorage();
-// console.log(`There is ${datasToLearn.length} rounds to learn.`);
 document.getElementById('learn-stored').innerText = datasToLearn.length;
 document.getElementById('learn-all').addEventListener('click', function () {
     // Shuffle datas
