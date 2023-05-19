@@ -33,29 +33,27 @@ function isGridFull() {
 /**
  * Indicate if a player win the game.
  * 
- * @returns {boolean} Is the game over ?
+ * @returns {boolean | number} winner number | false if the game is not over | true if the game is over without winner
  */
-function isGameOver() {
+function getWinner() {
     const diagonals = [[], []];
 
     // Analyze rows and columns
     for (const i in grid) {
-        if (isArrayFullAndRegular(grid[i])) return true;
+        if (isArrayFullAndRegular(grid[i])) return grid[i][0];
         
-        if (isArrayFullAndRegular(grid.map(row => row[i]))) return true;
+        if (isArrayFullAndRegular(grid.map(row => row[i]))) return grid[0][i];
 
         // Aggregate values from diagonals
         diagonals[0].push(grid[i][i]);
         diagonals[1].push(grid[i][grid.length - i - 1]);
     }
 
-    return (
-        isArrayFullAndRegular(diagonals[0])
-        ||
-        isArrayFullAndRegular(diagonals[1])
-        ||
-        isGridFull()
-    );
+    if (isArrayFullAndRegular(diagonals[0])) return diagonals[0][0];
+
+    if (isArrayFullAndRegular(diagonals[1])) return diagonals[1][0];
+
+    return isGridFull();
 }
 
 
@@ -197,11 +195,20 @@ function executeAction(coord, playerNb) {
     
     // console.table(grid);
 
-    if (isGameOver()) {
+    // The game is over
+    let winner = getWinner();
+    if (winner !== false) {
         document.getElementById('grid').removeEventListener('click', playHuman);
         document.getElementById('info').innerText = 'GAME OVER ';
         document.getElementById('info').appendChild(createStartButton());
         console.table(gamingLog);
+
+        // There is a winner
+        if (winner !== true) {
+            // Learn winner log
+            // player 1 => 0, player 2 => 1
+            learnWinnerLog(--winner);
+        }
         return;
     }
 
@@ -331,6 +338,38 @@ function reverseLayerValue(value) {
     if (value === 0) return 0;
 
     return value === 1 ? -1 : 1;
+}
+
+/**
+ * Teaching AI all the round of the winner in the gaming log.
+ * @param {number} winner - The winner number
+ */
+function learnWinnerLog(winner) {
+    console.log(winner);
+    const a = gamingLog
+        .filter(round => round.player === winner)
+        .map(round => {
+            return {
+                input: round.grid,
+                expectedOutput: getLayerWithAction(round.action)
+            };
+        });
+
+    console.log(a);
+}
+
+
+/**
+ * Returns a layer with '1' for the pointed cell.
+ * 
+ * @param {array} coord - The row and column nnumbers of the action.
+ * @returns {array} The layer with only a 1 value for the pointed cell.
+ */
+function getLayerWithAction(coord) {
+    const layer = Array(Math.pow(grid.length, 2)).fill(0);
+    const index = coord[0] * grid.length + coord[1];
+    layer[index] = 1;
+    return layer;
 }
 
 // -------------
