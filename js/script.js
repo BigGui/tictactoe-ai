@@ -82,30 +82,6 @@ function isCellFree(coord) {
 
 
 /**
- * Add a player number to a cell.
- * 
- * @param {array} coord - The row number and column number of the cell [row, column]
- * @param {number} playerNb - The player number [0 | 1]
- */
-function executeAction(coord, playerNb) {
-    grid[coord[0]][coord[1]] = playerNb+1;
-
-    console.table(grid);
-
-    if (isGameOver()) {
-        el.parentElement.removeEventListener('click', play);
-        document.getElementById('info').innerText = 'GAME OVER ';
-        document.getElementById('info').appendChild(createStartButton());
-        return;
-    }
-
-    roundCounter++;
-
-    displayCurrentPlayer();
-}
-
-
-/**
  * Execute a player action when a player click on the grid.
  * 
  * @param {event} event - A click event on the grid.
@@ -129,6 +105,11 @@ function playHuman(event) {
 }
 
 
+/**
+ * Ask AI to play.
+ * 
+ * @returns void
+ */
 function playAI() {
     brain
         .askAnswer(grid.flat().map(v => 2 * v - 3))
@@ -138,6 +119,31 @@ function playAI() {
             // executeAction(coord, playerNb);
         });
 }
+
+
+/**
+ * Add a player number to a cell.
+ * 
+ * @param {array} coord - The row number and column number of the cell [row, column]
+ * @param {number} playerNb - The player number [0 | 1]
+ */
+function executeAction(coord, playerNb) {
+    grid[coord[0]][coord[1]] = playerNb+1;
+
+    console.table(grid);
+
+    if (isGameOver()) {
+        el.parentElement.removeEventListener('click', play);
+        document.getElementById('info').innerText = 'GAME OVER ';
+        document.getElementById('info').appendChild(createStartButton());
+        return;
+    }
+
+    roundCounter++;
+
+    displayCurrentPlayer();
+}
+
 
 /**
  * Create a button to click on in order to start a new game.
