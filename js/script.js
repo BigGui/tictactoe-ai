@@ -95,12 +95,6 @@ function playHuman(event) {
 
     const playerNb = getPlayerNumber();
     const coord = [el.dataset.row, el.dataset.col];
-
-    // Is this cell empty ?
-    if (!isCellFree(coord)) return;
-
-    // Add the symbol associated to the current player
-    el.innerText = playerSymbols[playerNb];
     executeAction(coord, playerNb);
 }
 
@@ -114,10 +108,39 @@ function playAI() {
     brain
         .askAnswer(grid.flat().map(v => 2 * v - 3))
         .then(output => {
-            console.log(output);
-
-            // executeAction(coord, playerNb);
+            // console.log(output);
+            // console.log(getArrayMaxIndex(output));
+            const coord = getCoordFromIndex(getArrayMaxIndex(output));
+            
+            console.log(coord);
+            executeAction(coord, getPlayerNumber());
         });
+}
+
+/**
+ * Return the index of the maximum value in the the given array.
+ * 
+ * @param {array} array - The array 
+ * @returns the index for the max value of the array
+ */
+function getArrayMaxIndex(array) {
+    let maxIndex;
+    for (const i in array) {
+        if (maxIndex === undefined || array[i] > array[maxIndex]) {
+            maxIndex = i;
+        }
+    }
+    return maxIndex;
+}
+
+/**
+ * Returns the row and columns number for a given index between 0 and 8.
+ * 
+ * @param {number} index  - An index between 0 and 8;
+ * @returns {array} the coord [row, col]
+ */
+function getCoordFromIndex(index) {
+    return [Math.floor(index / grid.length), index % grid.length];
 }
 
 
@@ -128,12 +151,18 @@ function playAI() {
  * @param {number} playerNb - The player number [0 | 1]
  */
 function executeAction(coord, playerNb) {
+
+    // Is this cell empty ?
+    if (!isCellFree(coord)) return;
+
+    // Add the symbol associated to the current player
+    getCellElement(coord).innerText = playerSymbols[playerNb];
     grid[coord[0]][coord[1]] = playerNb+1;
 
     console.table(grid);
 
     if (isGameOver()) {
-        el.parentElement.removeEventListener('click', play);
+        document.getElementById('grid').removeEventListener('click', playHuman);
         document.getElementById('info').innerText = 'GAME OVER ';
         document.getElementById('info').appendChild(createStartButton());
         return;
@@ -142,6 +171,17 @@ function executeAction(coord, playerNb) {
     roundCounter++;
 
     displayCurrentPlayer();
+}
+
+
+/**
+ * Gives the LI element representing the cell with coordinates in parameters.
+ * 
+ * @param {array} coord - Cell coordinates with [row, column] 
+ * @returns {element} The LI element representing the cell.
+ */
+function getCellElement(coord) {
+    return document.querySelector(`[data-row='${coord[0]}'][data-col='${coord[1]}']`);
 }
 
 
@@ -234,4 +274,4 @@ const playerSymbols = ['⭕', '❌'];
 initializeGame();
 
 const brain = new Brain();
-console.log(brain);
+playAI();
