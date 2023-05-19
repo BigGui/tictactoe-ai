@@ -26,7 +26,7 @@ function getNewCell(rowIndex, colIndex) {
  * @returns {boolean} Is the grid full ?
  */
 function isGridFull() {
-    return grid.flat().every(v => v !== '');
+    return grid.flat().every(v => v !== 0);
 }
 
 
@@ -66,7 +66,7 @@ function isGameOver() {
  * @returns {boolean} Result of the analysis ?
  */
 function isArrayFullAndRegular(array) {
-    return array.every(v => v !== '' && v === array[0]);
+    return array.every(v => v !== 0 && v === array[0]);
 }
 
 
@@ -77,7 +77,7 @@ function isArrayFullAndRegular(array) {
  * @returns {boolean} Is the game over ?
  */
 function isCellFree(coord) {
-    return grid[coord[0]][coord[1]] === '';
+    return grid[coord[0]][coord[1]] === 0;
 }
 
 
@@ -87,32 +87,10 @@ function isCellFree(coord) {
  * @param {array} coord - The row number and column number of the cell [row, column]
  * @param {number} playerNb - The player number [0 | 1]
  */
-function addPlayerToCell(coord, playerNb) {
-    grid[coord[0]][coord[1]] = playerNb;
-}
+function executeAction(coord, playerNb) {
+    grid[coord[0]][coord[1]] = playerNb+1;
 
-
-/**
- * Execute a player action on the grid.
- * 
- * @param {event} event - A click event on the grid.
- * @returns void
- */
-function play(event) {
-    const el = event.target;
-
-    // Is the click fires on cell ?
-    if (el.tagName !== 'LI') return;
-
-    const playerNb = getPlayerNumber();
-    const coord = [el.dataset.row, el.dataset.col];
-
-    // Is this cell empty ?
-    if (!isCellFree(coord)) return;
-
-    // Add the symbol associated to the current player
-    el.innerText = playerSymbols[playerNb];
-    addPlayerToCell(coord, playerNb);
+    console.table(grid);
 
     if (isGameOver()) {
         el.parentElement.removeEventListener('click', play);
@@ -126,6 +104,40 @@ function play(event) {
     displayCurrentPlayer();
 }
 
+
+/**
+ * Execute a player action when a player click on the grid.
+ * 
+ * @param {event} event - A click event on the grid.
+ * @returns void
+ */
+function playHuman(event) {
+    const el = event.target;
+
+    // Is the click fires on cell ?
+    if (el.tagName !== 'LI') return;
+
+    const playerNb = getPlayerNumber();
+    const coord = [el.dataset.row, el.dataset.col];
+
+    // Is this cell empty ?
+    if (!isCellFree(coord)) return;
+
+    // Add the symbol associated to the current player
+    el.innerText = playerSymbols[playerNb];
+    executeAction(coord, playerNb);
+}
+
+
+function playAI() {
+    brain
+        .askAnswer(grid.flat().map(v => 2 * v - 3))
+        .then(output => {
+            console.log(output);
+
+            // executeAction(coord, playerNb);
+        });
+}
 
 /**
  * Create a button to click on in order to start a new game.
@@ -162,9 +174,9 @@ function getPlayerNumber() {
  */
 function initializeGame() {
     grid = [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', '']
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
     ];
     roundCounter = 0;
 
@@ -179,7 +191,7 @@ function initializeGame() {
     fulfillGrid(gridElement);
     
     // Add the event listener on the grid to give players the ability to play
-    gridElement.addEventListener('click', play);
+    gridElement.addEventListener('click', playHuman);
 }
 
 
@@ -217,10 +229,3 @@ initializeGame();
 
 const brain = new Brain();
 console.log(brain);
-
-function testBrain(){
-    const a = brain.askAnswer([1, .6, .4, .6, .4, .9, .8, .7, .7]);
-    a.then(a => console.log(a));
-}
-
-testBrain();
