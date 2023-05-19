@@ -93,7 +93,7 @@ function playHuman(event) {
     // Is the click fires on cell ?
     if (el.tagName !== 'LI') return;
 
-    executeAction([el.dataset.row, el.dataset.col], getPlayerNumber());
+    executeAction([parseInt(el.dataset.row), parseInt(el.dataset.col)], getPlayerNumber());
 }
 
 
@@ -104,17 +104,13 @@ function playHuman(event) {
  */
 function playAI() {
     brain
-        .askAnswer(grid.flat().map(v => v === 0 ? 0 : 2 * v - 3))
+        .askAnswer(formatGridToLayer())
         .then(output => {
-            // console.log(output);
-            // console.log(getArrayMaxIndex(output));
             let coord = getCoordFromIndex(getArrayMaxIndex(output));
-
-            console.log(coord, isCellFree(coord));
 
             counterAI++;
             // Avoid looping in a trap
-            console.log('loop=',counterAI);
+            console.log('free cell loop: ',counterAI);
             if (counterAI > 100) coord = getRandomFreeCell();
             
             // The cell picked by AI is not empty
@@ -138,6 +134,16 @@ function playAI() {
             executeAction(coord, getPlayerNumber());
         });
 }
+
+
+/**
+ * Return the current grid state to the expected input layer for AI
+ * @returns {array} Array of values for input layer
+ */
+function formatGridToLayer() {
+    return grid.flat().map(v => v === 0 ? 0 : 2 * v - 3);
+}
+
 
 /**
  * Return the index of the maximum value in the the given array.
@@ -177,16 +183,25 @@ function executeAction(coord, playerNb) {
     // Is this cell empty ?
     if (!isCellFree(coord)) return;
 
+    // Add action to gaming log
+    // Reverse layer data for player (1 playerNb === 0)
+    gamingLog.push({
+        player: playerNb,
+        grid: playerNb === 0 ? formatGridToLayer().map(reverseLayerValue) : formatGridToLayer(),
+        action: coord
+    });
+
     // Add the symbol associated to the current player
     getCellElement(coord).innerText = playerSymbols[playerNb];
     grid[coord[0]][coord[1]] = playerNb+1;
     
-    console.table(grid);
+    // console.table(grid);
 
     if (isGameOver()) {
         document.getElementById('grid').removeEventListener('click', playHuman);
         document.getElementById('info').innerText = 'GAME OVER ';
         document.getElementById('info').appendChild(createStartButton());
+        console.table(gamingLog);
         return;
     }
 
@@ -250,6 +265,7 @@ function initializeGame() {
         [0, 0, 0]
     ];
     roundCounter = 0;
+    gamingLog = [];
 
     document.getElementById('info').innerText = '';
 
@@ -302,16 +318,31 @@ function getRandomFreeCell() {
     return coord;
 }
 
+
+/**
+ * Returns a value of the input layer in terms of player.
+ * -1 => 1
+ * 1 => -1
+ * 0 => 0
+ * @param {number} value - original value
+ * @returns {number} reversed value
+ */
+function reverseLayerValue(value) {
+    if (value === 0) return 0;
+
+    return value === 1 ? -1 : 1;
+}
+
 // -------------
 // SCRIPT
 // -------------
 
 let grid,
     roundCounter,
+    gamingLog,
     counterAI = 0;
 
+const brain = new Brain();
 const playerSymbols = ['⭕', '❌'];
 
 initializeGame();
-
-const brain = new Brain();
