@@ -204,8 +204,13 @@ function executeAction(coord, playerNb) {
         document.getElementById('info').appendChild(createStartButton());
         console.table(gamingLog);
 
-        // There is a winner
-        if (winner !== true) {
+        // The game ends in a draw
+        if (winner === true) {
+            // learning human log
+            learnWinnerLog(aiNumber === 1 ? 0 : 1);
+        }
+        else {
+            // There is a winner
             // Learn winner log
             // player 1 => 0, player 2 => 1
             learnWinnerLog(--winner);
