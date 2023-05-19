@@ -106,13 +106,28 @@ function playHuman(event) {
  */
 function playAI() {
     brain
-        .askAnswer(grid.flat().map(v => 2 * v - 3))
+        .askAnswer(grid.flat().map(v => v === 0 ? 0 : 2 * v - 3))
         .then(output => {
             // console.log(output);
             // console.log(getArrayMaxIndex(output));
             const coord = getCoordFromIndex(getArrayMaxIndex(output));
+
+            console.log(coord, isCellFree(coord));
             
-            console.log(coord);
+            // The cell picked by AI is not empty
+            // try to teach him to play on a free cell
+            // and play again
+            if (!isCellFree(coord)) {
+                // Give as expected output, the initial output only for empty cells.
+                const expectedOutput = output.map((v, i) => isCellFree(getCoordFromIndex(i)) ? v : 0);
+                // console.log(expectedOutput);
+                brain
+                    .learn(expectedOutput)
+                    .then(playAI);
+                return;
+            }
+
+            // Execute the action
             executeAction(coord, getPlayerNumber());
         });
 }
@@ -159,7 +174,7 @@ function executeAction(coord, playerNb) {
     getCellElement(coord).innerText = playerSymbols[playerNb];
     grid[coord[0]][coord[1]] = playerNb+1;
 
-    console.table(grid);
+    // console.table(grid);
 
     if (isGameOver()) {
         document.getElementById('grid').removeEventListener('click', playHuman);
@@ -171,6 +186,9 @@ function executeAction(coord, playerNb) {
     roundCounter++;
 
     displayCurrentPlayer();
+
+    // Ask AI to play on his turn
+    if (getPlayerNumber() === 1) playAI();
 }
 
 
@@ -274,4 +292,4 @@ const playerSymbols = ['⭕', '❌'];
 initializeGame();
 
 const brain = new Brain();
-playAI();
+// playAI();
