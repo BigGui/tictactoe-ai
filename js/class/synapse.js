@@ -18,7 +18,7 @@ export class Synapse {
     }
 
     updateWeight(error) {
-        this.weight -= .1 * this.neuronTo.getError() * this.neuronFrom.getOutput();
+        this.weight -= .25 * this.neuronTo.getError() * this.neuronFrom.getOutput();
     }
     
     exportDatas() {
