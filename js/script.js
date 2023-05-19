@@ -46,7 +46,7 @@ function isGameOver() {
 
         // Aggregate values from diagonals
         diagonals[0].push(grid[i][i]);
-        diagonals[1].push(grid[i][grid.length - i]);
+        diagonals[1].push(grid[i][grid.length - i - 1]);
     }
 
     return (
@@ -93,9 +93,7 @@ function playHuman(event) {
     // Is the click fires on cell ?
     if (el.tagName !== 'LI') return;
 
-    const playerNb = getPlayerNumber();
-    const coord = [el.dataset.row, el.dataset.col];
-    executeAction(coord, playerNb);
+    executeAction([el.dataset.row, el.dataset.col], getPlayerNumber());
 }
 
 
@@ -115,6 +113,7 @@ function playAI() {
             console.log(coord, isCellFree(coord));
 
             counterAI++;
+            // Avoid looping in a trap
             console.log('loop=',counterAI);
             if (counterAI > 100) coord = getRandomFreeCell();
             
@@ -122,9 +121,11 @@ function playAI() {
             // Teach him to play on a free cell
             // and play again
             if (!isCellFree(coord)) {
-                // Give as expected output, the initial output only foras play empty cells.
-                const expectedOutput = output.map((v, i) => isCellFree(getCoordFromIndex(i)) ? v : 0);
-                // console.log(expectedOutput);
+                // Give as expected output, the value 1 only for the free cell
+                // with the best value of the inital output.
+                const expectedOutput = Array(9).fill(0);
+                const maxIndex = getArrayMaxIndex(output.map((v, i) => isCellFree(getCoordFromIndex(i)) ? v : -1));
+                expectedOutput[maxIndex] = 1;
                 brain
                     .learn(expectedOutput)
                     .then(playAI);
@@ -179,8 +180,8 @@ function executeAction(coord, playerNb) {
     // Add the symbol associated to the current player
     getCellElement(coord).innerText = playerSymbols[playerNb];
     grid[coord[0]][coord[1]] = playerNb+1;
-
-    // console.table(grid);
+    
+    console.table(grid);
 
     if (isGameOver()) {
         document.getElementById('grid').removeEventListener('click', playHuman);
@@ -314,4 +315,3 @@ const playerSymbols = ['⭕', '❌'];
 initializeGame();
 
 const brain = new Brain();
-// playAI();
