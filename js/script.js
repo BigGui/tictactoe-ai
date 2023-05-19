@@ -282,7 +282,10 @@ function initializeGame() {
 
     // Define the player number of AI
     aiNumber = Math.floor(Math.random()*2);
+    playerSymbols.fill('☺️');
+    playerSymbols[aiNumber] = '🤖';
 
+    
     document.getElementById('info').innerText = '';
 
     const gridElement = document.getElementById('grid'); 
