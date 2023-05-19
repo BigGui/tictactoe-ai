@@ -199,7 +199,8 @@ function executeAction(coord, playerNb) {
     let winner = getWinner();
     if (winner !== false) {
         document.getElementById('grid').removeEventListener('click', playHuman);
-        document.getElementById('info').innerText = 'GAME OVER ';
+        document.getElementById('info').innerText = `GAME OVER`;
+        document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} ${winner-1 === aiNumber ? 'AI' : 'HUMAN'} win `;
         document.getElementById('info').appendChild(createStartButton());
         console.table(gamingLog);
 
@@ -217,7 +218,7 @@ function executeAction(coord, playerNb) {
     displayCurrentPlayer();
 
     // Ask AI to play on his turn
-    if (getPlayerNumber() === 1) playAI();
+    if (getPlayerNumber() === aiNumber) playAI();
 }
 
 
@@ -249,7 +250,7 @@ function createStartButton() {
  * Display which player's turn it is.
  */
 function displayCurrentPlayer() {
-    document.getElementById('info').innerText = `Joueur N°${getPlayerNumber() + 1} ${playerSymbols[getPlayerNumber()]}`;
+    document.getElementById('info').innerText = `Player N°${getPlayerNumber() + 1} ${playerSymbols[getPlayerNumber()]} = ${getPlayerNumber() === aiNumber ? 'AI' : 'HUMAN'}`;
 }
 
 
@@ -274,6 +275,9 @@ function initializeGame() {
     roundCounter = 0;
     gamingLog = [];
 
+    // Define the player number of AI
+    aiNumber = Math.floor(Math.random()*2);
+
     document.getElementById('info').innerText = '';
 
     const gridElement = document.getElementById('grid'); 
@@ -286,6 +290,12 @@ function initializeGame() {
     
     // Add the event listener on the grid to give players the ability to play
     gridElement.addEventListener('click', playHuman);
+
+    // Display the first player on page
+    displayCurrentPlayer();
+
+    // Ask AI to play on his turn
+    if (getPlayerNumber() === aiNumber) playAI();
 }
 
 
@@ -387,6 +397,7 @@ function getLayerWithAction(coord) {
 let grid,
     roundCounter,
     gamingLog,
+    aiNumber,
     counterAI = 0;
 
 const brain = new Brain();
