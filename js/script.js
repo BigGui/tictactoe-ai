@@ -106,10 +106,10 @@ function playAI() {
         .then(output => {
             let coord = getCoordFromIndex(getArrayMaxIndex(output));
 
-            counterAI++;
+            counterAILoop++;
             // Avoid looping in a trap
-            console.log('free cell loop: ',counterAI);
-            if (counterAI > 100) coord = getRandomFreeCell();
+            console.log('free cell loop: ',counterAILoop);
+            if (counterAILoop > 100) coord = getRandomFreeCell();
             
             // The cell picked by AI is not empty
             // Teach him to play on a free cell
@@ -126,7 +126,7 @@ function playAI() {
                 return;
             }
 
-            counterAI = 0;
+            counterAILoop = 0;
 
             // Execute the action
             executeAction(coord, getPlayerNumber());
@@ -366,7 +366,7 @@ function reverseLayerValue(value) {
 async function learnWinnerLog(winner) {
     // Get all the rounds from the winner
     // Transform data to input => expected output layers
-    const datasToLearn = gamingLog
+    const datas = gamingLog
         .filter(round => round.player === winner)
         .map(round => {
             return {
@@ -377,11 +377,15 @@ async function learnWinnerLog(winner) {
 
     // Learn each round
     console.log('starting learn process');
-    for (const data of datasToLearn) {
+    for (const data of datas) {
         await brain.learnData(data.input, data.expectedOutput);
-        console.log(data);
     }
     console.log('learn process is over');
+
+    // Append datas to learn to the existing storage
+    datasToLearn.push(...datas);
+    // update the storage
+    localStorage.setItem('datasToLearn', JSON.stringify(datasToLearn));
 }
 
 
@@ -398,6 +402,17 @@ function getLayerWithAction(coord) {
     return layer;
 }
 
+
+/**
+ * Returns stored datas to learn from the local storage
+ * @returns {array} All the datas to learn
+ */
+function retrieveDatasToLearnFromStorage() {
+    if (localStorage.getItem('datasToLearn') === null) return [];
+
+    return JSON.parse(localStorage.getItem('datasToLearn'));
+}
+
 // -------------
 // SCRIPT
 // -------------
@@ -406,7 +421,11 @@ let grid,
     roundCounter,
     gamingLog,
     aiNumber,
-    counterAI = 0;
+    learningCounter = 0,
+    counterAILoop = 0;
+
+let datasToLearn = retrieveDatasToLearnFromStorage();
+console.log(`There is ${datasToLearn.length} rounds to learn.`);
 
 const brain = new Brain();
 const playerSymbols = ['⭕', '❌'];
