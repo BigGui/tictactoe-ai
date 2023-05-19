@@ -340,13 +340,15 @@ function reverseLayerValue(value) {
     return value === 1 ? -1 : 1;
 }
 
+
 /**
  * Teaching AI all the round of the winner in the gaming log.
  * @param {number} winner - The winner number
  */
-function learnWinnerLog(winner) {
-    console.log(winner);
-    const a = gamingLog
+async function learnWinnerLog(winner) {
+    // Get all the rounds from the winner
+    // Transform data to input => expected output layers
+    const datasToLearn = gamingLog
         .filter(round => round.player === winner)
         .map(round => {
             return {
@@ -355,7 +357,13 @@ function learnWinnerLog(winner) {
             };
         });
 
-    console.log(a);
+    // Learn each round
+    console.log('starting learn process');
+    for (const data of datasToLearn) {
+        await brain.learnData(data.input, data.expectedOutput);
+        console.log(data);
+    }
+    console.log('learn process is over');
 }
 
 
