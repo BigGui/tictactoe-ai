@@ -110,15 +110,19 @@ function playAI() {
         .then(output => {
             // console.log(output);
             // console.log(getArrayMaxIndex(output));
-            const coord = getCoordFromIndex(getArrayMaxIndex(output));
+            let coord = getCoordFromIndex(getArrayMaxIndex(output));
 
             console.log(coord, isCellFree(coord));
+
+            counterAI++;
+            console.log('loop=',counterAI);
+            if (counterAI > 100) coord = getRandomFreeCell();
             
             // The cell picked by AI is not empty
-            // try to teach him to play on a free cell
+            // Teach him to play on a free cell
             // and play again
             if (!isCellFree(coord)) {
-                // Give as expected output, the initial output only for empty cells.
+                // Give as expected output, the initial output only foras play empty cells.
                 const expectedOutput = output.map((v, i) => isCellFree(getCoordFromIndex(i)) ? v : 0);
                 // console.log(expectedOutput);
                 brain
@@ -126,6 +130,8 @@ function playAI() {
                     .then(playAI);
                 return;
             }
+
+            counterAI = 0;
 
             // Execute the action
             executeAction(coord, getPlayerNumber());
@@ -280,12 +286,28 @@ function emptyElement(element) {
     while(element.firstChild) element.firstChild.remove();
 }
 
+
+/**
+ * Returns the coordinate of a random free cell in the grid.
+ * @returns Cell coordinates [row, column]
+ */
+function getRandomFreeCell() {
+    if (isGridFull()) return null;
+
+    const coord = [Math.floor(Math.random()*grid.length), Math.floor(Math.random()*grid.length)];
+
+    if (!isCellFree(coord)) return getRandomFreeCell();
+
+    return coord;
+}
+
 // -------------
 // SCRIPT
 // -------------
 
 let grid,
-    roundCounter;
+    roundCounter,
+    counterAI = 0;
 
 const playerSymbols = ['⭕', '❌'];
 
