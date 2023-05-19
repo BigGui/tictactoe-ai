@@ -14,10 +14,12 @@ export class Brain {
         else {
             this.layers = [
                 new Layer({length:9}),
-                new Layer({length:20}),
-                new Layer({length:20}),
-                new Layer({length:20}),
-                new Layer({length:20}),
+                new Layer({length:30}),
+                new Layer({length:30}),
+                new Layer({length:50}),
+                new Layer({length:50}),
+                new Layer({length:30}),
+                new Layer({length:30}),
                 new Layer({length:9})
             ];
         }
@@ -77,6 +79,8 @@ export class Brain {
         let errors = await this.propagateErrors();
 
         await this.updateSynapses();
+
+        return output;
     }
 
     

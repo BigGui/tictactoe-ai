@@ -41,7 +41,7 @@ function getWinner() {
     // Analyze rows and columns
     for (const i in grid) {
         if (isArrayFullAndRegular(grid[i])) return grid[i][0];
-        
+
         if (isArrayFullAndRegular(grid.map(row => row[i]))) return grid[0][i];
 
         // Aggregate values from diagonals
@@ -108,9 +108,9 @@ function playAI() {
 
             counterAILoop++;
             // Avoid looping in a trap
-            console.log('free cell loop: ',counterAILoop);
+            console.log('free cell loop: ', counterAILoop);
             if (counterAILoop > 100) coord = getRandomFreeCell();
-            
+
             // The cell picked by AI is not empty
             // Teach him to play on a free cell
             // and play again
@@ -191,8 +191,8 @@ function executeAction(coord, playerNb) {
 
     // Add the symbol associated to the current player
     getCellElement(coord).innerText = playerSymbols[playerNb];
-    grid[coord[0]][coord[1]] = playerNb+1;
-    
+    grid[coord[0]][coord[1]] = playerNb + 1;
+
     // console.table(grid);
 
     // The game is over
@@ -200,9 +200,8 @@ function executeAction(coord, playerNb) {
     if (winner !== false) {
         document.getElementById('grid').removeEventListener('click', playHuman);
         document.getElementById('info').innerText = `GAME OVER`;
-        document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} ${winner-1 === aiNumber ? 'AI' : 'HUMAN'} win `;
+        document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} ${winner - 1 === aiNumber ? 'AI' : 'HUMAN'} win `;
         document.getElementById('info').appendChild(createStartButton());
-        console.table(gamingLog);
 
         // The game ends in a draw
         if (winner === true) {
@@ -265,7 +264,7 @@ function displayCurrentPlayer() {
  * @return {number} The player number who play.
  */
 function getPlayerNumber() {
-    return roundCounter%2;
+    return roundCounter % 2;
 }
 
 /**
@@ -281,21 +280,23 @@ function initializeGame() {
     gamingLog = [];
 
     // Define the player number of AI
-    aiNumber = Math.floor(Math.random()*2);
+    // aiNumber = Math.floor(Math.random() * 2);
+    aiNumber = 1;
+
     playerSymbols.fill('☺️');
     playerSymbols[aiNumber] = '🤖';
 
-    
+
     document.getElementById('info').innerText = '';
 
-    const gridElement = document.getElementById('grid'); 
+    const gridElement = document.getElementById('grid');
 
     // Remove all existing elements in the grid
     emptyElement(gridElement);
 
     // Create all the need LI in the grid
     fulfillGrid(gridElement);
-    
+
     // Add the event listener on the grid to give players the ability to play
     gridElement.addEventListener('click', playHuman);
 
@@ -325,7 +326,7 @@ function fulfillGrid(gridElement) {
  * @param {element} element - The element to empty. 
  */
 function emptyElement(element) {
-    while(element.firstChild) element.firstChild.remove();
+    while (element.firstChild) element.firstChild.remove();
 }
 
 
@@ -336,7 +337,7 @@ function emptyElement(element) {
 function getRandomFreeCell() {
     if (isGridFull()) return null;
 
-    const coord = [Math.floor(Math.random()*grid.length), Math.floor(Math.random()*grid.length)];
+    const coord = [Math.floor(Math.random() * grid.length), Math.floor(Math.random() * grid.length)];
 
     if (!isCellFree(coord)) return getRandomFreeCell();
 
@@ -376,16 +377,36 @@ async function learnWinnerLog(winner) {
         });
 
     // Learn each round
-    console.log('starting learn process');
-    for (const data of datas) {
-        await brain.learnData(data.input, data.expectedOutput);
-    }
-    console.log('learn process is over');
+    await learnDatas(datas);
 
     // Append datas to learn to the existing storage
     datasToLearn.push(...datas);
-    // update the storage
+
+    // Update the storage
     localStorage.setItem('datasToLearn', JSON.stringify(datasToLearn));
+}
+
+
+/**
+ * Learn a simple of datas to AI.
+ * @param {array} datas 
+ */
+async function learnDatas(datas) {
+    let learningTotal = 0;
+    let learningOK = 0;
+    console.log('starting learn process');
+    for (const data of datas) {
+        const output = await brain.learnData(data.input, data.expectedOutput);
+        learningCounter++;
+        learningTotal++;
+        if (getArrayMaxIndex(output) === getArrayMaxIndex(data.expectedOutput)) {
+            learningOK++;
+        }
+        // console.log(getArrayMaxIndex(output), getArrayMaxIndex(data.expectedOutput));
+    }
+    console.log('learn process is over');
+    console.log(learningOK / learningTotal * 100);
+    document.getElementById('learn-count').innerText = learningCounter;
 }
 
 
@@ -413,6 +434,7 @@ function retrieveDatasToLearnFromStorage() {
     return JSON.parse(localStorage.getItem('datasToLearn'));
 }
 
+
 // -------------
 // SCRIPT
 // -------------
@@ -425,7 +447,13 @@ let grid,
     counterAILoop = 0;
 
 let datasToLearn = retrieveDatasToLearnFromStorage();
-console.log(`There is ${datasToLearn.length} rounds to learn.`);
+// console.log(`There is ${datasToLearn.length} rounds to learn.`);
+document.getElementById('learn-stored').innerText = datasToLearn.length;
+document.getElementById('learn-all').addEventListener('click', function () {
+    // Shuffle datas
+    datasToLearn.sort((a, b) => 0.5 - Math.random());
+    learnDatas(datasToLearn);
+});
 
 const brain = new Brain();
 const playerSymbols = ['⭕', '❌'];
