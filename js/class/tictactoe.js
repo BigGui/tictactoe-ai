@@ -18,7 +18,7 @@ export class TicTacToe {
         // Init data management
         this.datasToLearn = this.retrieveDatasToLearnFromStorage();
         document.getElementById('learn-stored').innerText = this.datasToLearn.length;
-        document.getElementById('learn-all').addEventListener('click', () => this.teachThemAll());
+        document.getElementById('learn-all').addEventListener('click', () => this.teachThemTo(60));
     }
 
 
@@ -77,7 +77,7 @@ export class TicTacToe {
             [0, 0, 0],
             [0, 0, 0]
         ];
-        this.roundCounter = Math.floor(Math.random() * 2);
+        this.roundCounter = 0;
         this.gamingLog = [];
 
         // Remove all existing elements in the grid
@@ -160,7 +160,6 @@ export class TicTacToe {
      * @param {number} playerNb - The player number [0 | 1]
      */
     executeAction(coord, playerNb) {
-
         // Is this cell empty ?
         if (!this.isCellFree(coord)) return;
 
@@ -397,6 +396,16 @@ export class TicTacToe {
         for (const ai of this.aiPlayers) {
             if (ai === null) continue;
             await ai.learnDatas(this.datasToLearn);
+        }
+    }
+
+    async teachThemTo(ratio) {
+        // Shuffle datas
+        this.datasToLearn.sort((a, b) => 0.5 - Math.random());
+
+        for (const ai of this.aiPlayers) {
+            if (ai === null) continue;
+            await ai.learnDatasToRatio(this.datasToLearn, ratio);
         }
     }
 }

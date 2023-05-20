@@ -7,6 +7,8 @@ export class AiPlayer {
         this.playerNb = params.playerNb || 0;
         this.game = params.game || null;
         this.counterLoop = 0;
+        this.learningCounter = 0;
+        this.learningRatio = null;
     }
 
     async learnDatas(datas) {
@@ -15,17 +17,32 @@ export class AiPlayer {
         console.log('starting learning process...');
         for (const data of datas) {
             const output = await this.brain.learnData(data.input, data.expectedOutput);
-            // learningCounter++;
+            this.learningCounter++;
             learningTotal++;
             if (utils.getArrayMaxIndex(output) === utils.getArrayMaxIndex(data.expectedOutput)) {
                 learningOK++;
             }
         }
-        console.log('learning process is over ', `ratio ${Math.round(learningOK / learningTotal * 100)}%`);
-        document.getElementById('learnMsg').innerText = `ratio ${Math.round(learningOK / learningTotal * 100)}%`;
+
+        this.learningRatio = learningOK / learningTotal * 100;
+        console.log('learning process is over ', `ratio ${Math.round(this.learningRatio)}%`);
+        document.getElementById('learnMsg').innerText = `ratio ${Math.round(this.learningRatio)}%`;
+    }
+
+    async learnDatasToRatio(datas, ratio) {
+        while (!this.learningRatio || this.learningRatio <= ratio) {
+            await this.learnDatas(datas);
+        }
     }
 
     play() {
+        // If an AI play the first turn, pick a cell randomly
+        if (this.game.roundCounter === 0) {
+            // Execute the action
+            this.game.executeAction(this.game.getRandomFreeCell(), this.playerNb);
+            return;
+        }
+
         this.brain
             .askAnswer(this.game.formatGridToLayer())
             .then(output => {
