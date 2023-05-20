@@ -14,7 +14,11 @@ export class TicTacToe {
         this.aiPlayers = [null, null];
         this.roundCounter = 0;
         this.gridElement = document.getElementById('grid');
+
+        // Init data management
         this.datasToLearn = this.retrieveDatasToLearnFromStorage();
+        document.getElementById('learn-stored').innerText = this.datasToLearn.length;
+        document.getElementById('learn-all').addEventListener('click', () => this.teachThemAll());
     }
 
 
@@ -374,7 +378,7 @@ export class TicTacToe {
         return value === 1 ? -1 : 1;
     }
 
-    
+
     /**
      * Returns stored datas to learn from the local storage
      * @returns {array} All the datas to learn
@@ -385,4 +389,14 @@ export class TicTacToe {
         return JSON.parse(localStorage.getItem('datasToLearn'));
     }
 
+
+    async teachThemAll() {
+        // Shuffle datas
+        this.datasToLearn.sort((a, b) => 0.5 - Math.random());
+
+        for (const ai of this.aiPlayers) {
+            if (ai === null) continue;
+            await ai.learnDatas(this.datasToLearn);
+        }
+    }
 }

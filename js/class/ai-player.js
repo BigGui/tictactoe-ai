@@ -12,6 +12,7 @@ export class AiPlayer {
     async learnDatas(datas) {
         let learningTotal = 0;
         let learningOK = 0;
+        console.log('starting learning process...');
         for (const data of datas) {
             const output = await this.brain.learnData(data.input, data.expectedOutput);
             // learningCounter++;
@@ -20,8 +21,8 @@ export class AiPlayer {
                 learningOK++;
             }
         }
+        console.log('learning process is over ', `ratio ${Math.round(learningOK / learningTotal * 100)}%`);
         document.getElementById('learnMsg').innerText = `ratio ${Math.round(learningOK / learningTotal * 100)}%`;
-        // document.getElementById('learn-count').innerText = learningCounter;
     }
 
     play() {
