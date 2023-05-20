@@ -114,9 +114,17 @@ export class TicTacToe {
 
         // Analyze rows and columns
         for (const i in this.grid) {
-            if (utils.isArrayFullAndRegular(this.grid[i])) return this.grid[i][0];
-
-            if (utils.isArrayFullAndRegular(this.grid.map(row => row[i]))) return this.grid[0][i];
+            // Rows
+            if (utils.isArrayFullAndRegular(this.grid[i])) {
+                this.showWinningCells([[i, 0], [i, 1], [i, 2]]);
+                return this.grid[i][0];
+            }
+            
+            // Columns
+            if (utils.isArrayFullAndRegular(this.grid.map(row => row[i]))) {
+                this.showWinningCells([[0, i], [1, i], [2, i]]);
+                return this.grid[0][i];
+            }
 
             // Aggregate values from diagonals
             diagonals[0].push(this.grid[i][i]);
@@ -125,11 +133,24 @@ export class TicTacToe {
 
         // Analyze diagonals
         for (const i in diagonals) {
-            if (utils.isArrayFullAndRegular(diagonals[i])) return diagonals[i][0];
+            if (utils.isArrayFullAndRegular(diagonals[i])) {
+                this.showWinningCells(i == 0 ? [[0, 0], [1, 1], [2, 2]] : [[0, 2], [1, 1], [2, 0]]);
+                return diagonals[i][0];
+            }
         }
 
         // Is the game over because the grid is full ?
         return this.isFull();
+    }
+
+
+    /**
+     * Add a color to the winning cells.
+     * 
+     * @param {array} coord - An array of coord
+     */
+    showWinningCells(coordList) {
+        coordList.forEach(coord => this.getCellElement(coord).classList.add('win'));
     }
 
 
@@ -353,7 +374,7 @@ export class TicTacToe {
             });
 
         // Learn each round
-        this.aiPlayer.learnDatas(datas);
+        if (this.aiPlayer !== null) this.aiPlayer.learnDatas(datas);
 
         // Append datas to learn to the existing storage
         this.datasToLearn.push(...datas);

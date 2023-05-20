@@ -58,3 +58,6 @@ ul, li {
     aspect-ratio: 1 / 1;
     background-color: white;
 }
+.grid > li.win {
+    background-color: lightgreen;
+}
