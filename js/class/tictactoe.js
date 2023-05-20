@@ -14,6 +14,7 @@ export class TicTacToe {
         this.aiPlayer = null;
         this.roundCounter = 0;
         this.gridElement = document.getElementById('grid');
+        this.gameWinners = [];
 
         // Init data management
         this.datasToLearn = this.retrieveDatasToLearnFromStorage();
@@ -206,6 +207,10 @@ export class TicTacToe {
             document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} win `;
             document.getElementById('info').appendChild(this.createStartButton());
 
+            // add Winner to History
+            this.gameWinners.push(winner === true ? '' : winner - 1);
+            this.updateWinnerProgress();
+
             // The game ends in a draw
             if (winner === true) {
                 // learning human log
@@ -233,6 +238,17 @@ export class TicTacToe {
         else if (this.playersTypes[this.getPlayerNumber()] === 'r') {
             this.playRandom();
         }
+    }
+
+    updateWinnerProgress() {
+        console.log(this.gameWinners);
+        const scores = [
+            Math.floor(this.gameWinners.filter(p => p === 0).length / this.gameWinners.length * 100),
+            Math.floor(this.gameWinners.filter(p => p === 1).length / this.gameWinners.length * 100)
+        ];
+        document.getElementById(`progress-0`).style.width = `${scores[0]}%`;
+        document.getElementById(`progress-eq`).style.width = `${100 - scores[0] - scores[1]}%`;
+        document.getElementById(`progress-1`).style.width = `${scores[1]}%`;
     }
 
 
