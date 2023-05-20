@@ -1,4 +1,5 @@
 import { TicTacToe } from "./class/tictactoe.js";
+import { AiPlayer } from "./class/ai-player.js";
 
 // -------------
 // FUNCTIONS
@@ -502,43 +503,3 @@ const game = new TicTacToe();
 document.getElementById('create-btn').addEventListener('click', function() {
     game.create();
 });
-
-// let grid,
-//     roundCounter,
-//     gamingLog,
-//     learningCounter = 0,
-//     counterAILoop = 0;
-
-// let datasToLearn = retrieveDatasToLearnFromStorage();
-// document.getElementById('learn-stored').innerText = datasToLearn.length;
-// document.getElementById('learn-all').addEventListener('click', async function () {
-//     // Shuffle datas
-//     datasToLearn.sort((a, b) => 0.5 - Math.random());
-//     // learnDatas(datasToLearn, brains[1]);
-//     if (playersTypes[0] === 'a') {
-//         await learnDatas(datasToLearn, brains[0]);
-//     }
-//     if (playersTypes[1] === 'a') {
-//         await learnDatas(datasToLearn, brains[1]);
-//     }
-// });
-
-// // const brain = new Brain();
-// const brains = [new Brain(), new Brain()];
-// const playerSymbols = ['⭕', '❌'];
-// let playersTypes = ['h', 'h'];
-// let aiPlayers = [null, null];
-
-
-
-// // document.getElementById('info').appendChild(createStartButton());
-
-
-// const a = new AiPlayer();
-
-// a.learnDatas([
-//     {
-//         input: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-//         expectedOutput: [0, 0, 0, 0, 0, 0, 0, 0, 1]
-//     }
-// ]);

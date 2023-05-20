@@ -10,6 +10,10 @@ export class AiPlayer {
         this.learningRatio = null;
     }
 
+    /**
+     * Learn a sample of datas.
+     * @param {array} datas - Sample of data to learn.
+     */
     async learnDatas(datas) {
         let learningTotal = 0;
         let learningOK = 0;
@@ -29,11 +33,31 @@ export class AiPlayer {
     }
 
     async learnDatasToRatio(datas, ratio) {
-        while (!this.learningRatio || this.learningRatio <= ratio) {
-            await this.learnDatas(datas);
+        let learningList = [];
+        console.log('starting learning process...');
+    
+        while (learningList.length < 5000 || this.learningRatio < ratio || learningList.length > 200000) {
+            // Get a random data from sample
+            const data = utils.getRandomFromArray(datas);
+
+            // Ask AI to learn this data and get his output
+            const output = await this.brain.learnData(data.input, data.expectedOutput);
+
+            // Compare this output to the expected output and add the result to the learning list result (0 or 1)
+            learningList.push(utils.getArrayMaxIndex(output) === utils.getArrayMaxIndex(data.expectedOutput) ? 1 : 0);
+            
+            // Get ratio of success for the last 1000 datas
+            if (learningList.length % 500 === 0) {
+                this.learningRatio = utils.getRatioFromArray(learningList, 5000);
+                console.log('...', learningList.length, '=>', this.learningRatio, '%');
+            }
         }
+        console.log('learning process is over ', `ratio ${Math.round(this.learningRatio)}%`);
     }
 
+    /**
+     * Ask AI to play.
+     */
     play() {
         // If an AI play the first turn, pick a cell randomly
         if (this.game.roundCounter === 0) {

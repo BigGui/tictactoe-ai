@@ -25,3 +25,12 @@ export function isArrayFullAndRegular(array) {
     return array.every(v => v !== 0 && v === array[0]);
 }
 
+export function getRatioFromArray(array, nb) {
+    const slice = array.slice(nb * -1);
+    return slice.reduce((a, b) => a + b, 0) / slice.length * 100;
+} 
+
+export function getRandomFromArray(array) {
+    return array[Math.floor(Math.random()*array.length)];
+}
+
