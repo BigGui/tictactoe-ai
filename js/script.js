@@ -1,4 +1,4 @@
-import { Brain } from "./class/brain.js";
+import { TicTacToe } from "./class/tictactoe.js";
 
 // -------------
 // FUNCTIONS
@@ -13,67 +13,73 @@ import { Brain } from "./class/brain.js";
  * @param {number} colIndex - The column number of the cell
  * @returns {element} The new LI element to display a cell grid
  */
-function getNewCell(rowIndex, colIndex) {
-    const li = document.createElement('li');
-    li.setAttribute('data-row', rowIndex);
-    li.setAttribute('data-col', colIndex);
-    return li;
-}
+// function getNewCell(rowIndex, colIndex) {
+//     const li = document.createElement('li');
+//     li.setAttribute('data-row', rowIndex);
+//     li.setAttribute('data-col', colIndex);
+//     return li;
+// }
+
+// function createGame() {
+//     // console.log(
+//     //     document.getElementById('p1').value,
+//     //     document.getElementById('p2').value
+//     // );
+
+//     // Get players choices
+//     playersTypes = [document.getElementById('p1').value, document.getElementById('p2').value];
+
+//     if (playersTypes[0] === 'h') playerSymbols[0] = '☺️';
+//     if (playersTypes[0] === 'a') playerSymbols[0] = '🖥️';
+//     if (playersTypes[1] === 'h') playerSymbols[1] = '🙂';
+//     if (playersTypes[1] === 'a') playerSymbols[1] = '🤖';
+
+//     // Hide start panel
+//     hideStartPanel();
+
+//     aiPlayers = playersTypes.map((type, playerNb) {
+//         if (type !== 'a') return null;
+//         return new AiPlayer({
+//             playerNb: playerNb
+//         };
+//     });
+
+//     document.getElementById('info').innerText = '';
+// }
 
 
 /**
  * Start a game
  */
-function initializeGame() {
-    grid = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-    ];
-    roundCounter = Math.floor(Math.random() * 2);
-    gamingLog = [];
+// function initializeGame() {
+//     grid = [
+//         [0, 0, 0],
+//         [0, 0, 0],
+//         [0, 0, 0]
+//     ];
+//     roundCounter = Math.floor(Math.random() * 2);
+//     gamingLog = [];
 
-    // Define the player number of AI
-    // aiNumber = Math.floor(Math.random() * 2);
-    // aiNumber = 1;
 
-    console.log(
-        document.getElementById('p1').value,
-        document.getElementById('p2').value
-    );
-    // Get players choices
-    playersTypes = [document.getElementById('p1').value, document.getElementById('p2').value];
+//     const gridElement = document.getElementById('grid');
 
-    if (playersTypes[0] === 'h') playerSymbols[0] = '☺️';
-    if (playersTypes[0] === 'a') playerSymbols[0] = '🖥️';
-    if (playersTypes[1] === 'h') playerSymbols[1] = '🙂';
-    if (playersTypes[1] === 'a') playerSymbols[1] = '🤖';
+//     // Remove all existing elements in the grid
+//     emptyElement(gridElement);
 
-    // Hide start panel
-    hideStartPanel();
+//     // Create all the need LI in the grid
+//     fulfillGrid(gridElement);
 
-    document.getElementById('info').innerText = '';
+//     // Add the event listener on the grid to give players the ability to play
+//     gridElement.addEventListener('click', playHuman);
 
-    const gridElement = document.getElementById('grid');
+//     // Display the first player on page
+//     displayCurrentPlayer();
 
-    // Remove all existing elements in the grid
-    emptyElement(gridElement);
-
-    // Create all the need LI in the grid
-    fulfillGrid(gridElement);
-
-    // Add the event listener on the grid to give players the ability to play
-    gridElement.addEventListener('click', playHuman);
-
-    // Display the first player on page
-    displayCurrentPlayer();
-
-    // Ask AI to play on his turn
-    if (playersTypes[getPlayerNumber()] === 'a') {
-        setTimeout(() => playAI(), 150);
-    }
-    // if (getPlayerNumber() === aiNumber) playAI();
-}
+//     // Ask AI to play on his turn
+//     if (playersTypes[getPlayerNumber()] === 'a') {
+//         setTimeout(() => playAI(), 150);
+//     }
+// }
 
 
 /**
@@ -81,9 +87,9 @@ function initializeGame() {
  * 
  * @returns {boolean} Is the grid full ?
  */
-function isGridFull() {
-    return grid.flat().every(v => v !== 0);
-}
+// function isGridFull() {
+//     return grid.flat().every(v => v !== 0);
+// }
 
 
 /**
@@ -91,26 +97,26 @@ function isGridFull() {
  * 
  * @returns {boolean | number} winner number | false if the game is not over | true if the game is over without winner
  */
-function getWinner() {
-    const diagonals = [[], []];
+// function getWinner() {
+//     const diagonals = [[], []];
 
-    // Analyze rows and columns
-    for (const i in grid) {
-        if (isArrayFullAndRegular(grid[i])) return grid[i][0];
+//     // Analyze rows and columns
+//     for (const i in grid) {
+//         if (isArrayFullAndRegular(grid[i])) return grid[i][0];
 
-        if (isArrayFullAndRegular(grid.map(row => row[i]))) return grid[0][i];
+//         if (isArrayFullAndRegular(grid.map(row => row[i]))) return grid[0][i];
 
-        // Aggregate values from diagonals
-        diagonals[0].push(grid[i][i]);
-        diagonals[1].push(grid[i][grid.length - i - 1]);
-    }
+//         // Aggregate values from diagonals
+//         diagonals[0].push(grid[i][i]);
+//         diagonals[1].push(grid[i][grid.length - i - 1]);
+//     }
 
-    if (isArrayFullAndRegular(diagonals[0])) return diagonals[0][0];
+//     if (isArrayFullAndRegular(diagonals[0])) return diagonals[0][0];
 
-    if (isArrayFullAndRegular(diagonals[1])) return diagonals[1][0];
+//     if (isArrayFullAndRegular(diagonals[1])) return diagonals[1][0];
 
-    return isGridFull();
-}
+//     return isGridFull();
+// }
 
 
 /**
@@ -119,9 +125,9 @@ function getWinner() {
  * @param {array} array - The array to analyze
  * @returns {boolean} Result of the analysis ?
  */
-function isArrayFullAndRegular(array) {
-    return array.every(v => v !== 0 && v === array[0]);
-}
+// function isArrayFullAndRegular(array) {
+//     return array.every(v => v !== 0 && v === array[0]);
+// }
 
 
 /**
@@ -130,9 +136,9 @@ function isArrayFullAndRegular(array) {
  * @param {array} coord - The row number and column number of the cell [row, column]
  * @returns {boolean} Is the game over ?
  */
-function isCellFree(coord) {
-    return grid[coord[0]][coord[1]] === 0;
-}
+// function isCellFree(coord) {
+//     return grid[coord[0]][coord[1]] === 0;
+// }
 
 
 /**
@@ -141,59 +147,58 @@ function isCellFree(coord) {
  * @param {array} coord - The row number and column number of the cell [row, column]
  * @param {number} playerNb - The player number [0 | 1]
  */
-function executeAction(coord, playerNb) {
+// function executeAction(coord, playerNb) {
 
-    // Is this cell empty ?
-    if (!isCellFree(coord)) return;
+//     // Is this cell empty ?
+//     if (!isCellFree(coord)) return;
 
-    // Add action to gaming log
-    // Reverse layer data for player (1 playerNb === 0)
-    gamingLog.push({
-        player: playerNb,
-        grid: playerNb === 0 ? formatGridToLayer().map(reverseLayerValue) : formatGridToLayer(),
-        action: coord
-    });
+//     // Add action to gaming log
+//     // Reverse layer data for player (1 playerNb === 0)
+//     gamingLog.push({
+//         player: playerNb,
+//         grid: playerNb === 0 ? formatGridToLayer().map(reverseLayerValue) : formatGridToLayer(),
+//         action: coord
+//     });
 
-    // Add the symbol associated to the current player
-    getCellElement(coord).innerText = playerSymbols[playerNb];
-    grid[coord[0]][coord[1]] = playerNb + 1;
+//     // Add the symbol associated to the current player
+//     getCellElement(coord).innerText = playerSymbols[playerNb];
+//     grid[coord[0]][coord[1]] = playerNb + 1;
 
-    // console.table(grid);
+//     // console.table(grid);
 
-    // The game is over
-    let winner = getWinner();
-    if (winner !== false) {
-        document.getElementById('grid').removeEventListener('click', playHuman);
-        document.getElementById('info').innerText = `GAME OVER`;
-        document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} ${winner - 1 === aiNumber ? 'AI' : 'HUMAN'} win `;
-        document.getElementById('info').appendChild(createStartButton());
+//     // The game is over
+//     let winner = getWinner();
+//     if (winner !== false) {
+//         document.getElementById('grid').removeEventListener('click', playHuman);
+//         document.getElementById('info').innerText = `GAME OVER`;
+//         document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} win `;
+//         document.getElementById('info').appendChild(createStartButton());
 
-        // The game ends in a draw
-        if (winner === true) {
-            // learning human log
-            playersTypes.forEach((type, playerNb) => {
-                if (type === 'h') learnWinnerLog(playerNb);
-            });
-        }
-        else {
-            // There is a winner
-            // Learn winner log
-            // player 1 => 0, player 2 => 1
-            learnWinnerLog(--winner);
-        }
-        return;
-    }
+//         // The game ends in a draw
+//         if (winner === true) {
+//             // learning human log
+//             playersTypes.forEach((type, playerNb) => {
+//                 if (type === 'h') learnWinnerLog(playerNb);
+//             });
+//         }
+//         else {
+//             // There is a winner
+//             // Learn winner log
+//             // player 1 => 0, player 2 => 1
+//             learnWinnerLog(--winner);
+//         }
+//         return;
+//     }
 
-    roundCounter++;
+//     roundCounter++;
 
-    displayCurrentPlayer();
+//     displayCurrentPlayer();
 
-    // Ask AI to play on his turn
-    // if (playersTypes[getPlayerNumber()] === 'a') playAI();
-    if (playersTypes[getPlayerNumber()] === 'a') {
-        setTimeout(() => playAI(), 150);
-    }
-}
+//     // Ask AI to play on his turn
+//     if (playersTypes[getPlayerNumber()] === 'a') {
+//         setTimeout(() => playAI(), 150);
+//     }
+// }
 
 
 /**
@@ -202,61 +207,23 @@ function executeAction(coord, playerNb) {
  * @param {event} event - A click event on the grid.
  * @returns void
  */
-function playHuman(event) {
-    const el = event.target;
+// function playHuman(event) {
+//     const el = event.target;
 
-    // Is the click fires on cell ?
-    if (el.tagName !== 'LI') return;
+//     // Is the click fires on cell ?
+//     if (el.tagName !== 'LI') return;
 
-    executeAction([parseInt(el.dataset.row), parseInt(el.dataset.col)], getPlayerNumber());
-}
-
-
-/**
- * Ask AI to play.
- * 
- * @returns void
- */
-function playAI() {
-    brains[getPlayerNumber()]
-        .askAnswer(formatGridToLayer())
-        .then(output => {
-            let coord = getCoordFromIndex(getArrayMaxIndex(output));
-
-            counterAILoop++;
-            // Avoid looping in a trap
-            if (counterAILoop > 100) coord = getRandomFreeCell();
-
-            // The cell picked by AI is not empty
-            // Teach him to play on a free cell
-            // and play again
-            if (!isCellFree(coord)) {
-                // Give as expected output, the value 1 only for the free cell
-                // with the best value of the inital output.
-                const expectedOutput = Array(9).fill(0);
-                const maxIndex = getArrayMaxIndex(output.map((v, i) => isCellFree(getCoordFromIndex(i)) ? v : -1));
-                expectedOutput[maxIndex] = 1;
-                brains[getPlayerNumber()]
-                    .learn(expectedOutput)
-                    .then(playAI);
-                return;
-            }
-
-            counterAILoop = 0;
-
-            // Execute the action
-            executeAction(coord, getPlayerNumber());
-        });
-}
+//     executeAction([parseInt(el.dataset.row), parseInt(el.dataset.col)], getPlayerNumber());
+// }
 
 
 /**
  * Return the current grid state to the expected input layer for AI
  * @returns {array} Array of values for input layer
  */
-function formatGridToLayer() {
-    return grid.flat().map(v => v === 0 ? 0 : 2 * v - 3);
-}
+// function formatGridToLayer() {
+//     return grid.flat().map(v => v === 0 ? 0 : 2 * v - 3);
+// }
 
 
 /**
@@ -265,15 +232,15 @@ function formatGridToLayer() {
  * @param {array} array - The array 
  * @returns the index for the max value of the array
  */
-function getArrayMaxIndex(array) {
-    let maxIndex;
-    for (const i in array) {
-        if (maxIndex === undefined || array[i] > array[maxIndex]) {
-            maxIndex = i;
-        }
-    }
-    return maxIndex;
-}
+// function getArrayMaxIndex(array) {
+//     let maxIndex;
+//     for (const i in array) {
+//         if (maxIndex === undefined || array[i] > array[maxIndex]) {
+//             maxIndex = i;
+//         }
+//     }
+//     return maxIndex;
+// }
 
 
 /**
@@ -282,9 +249,9 @@ function getArrayMaxIndex(array) {
  * @param {number} index  - An index between 0 and 8;
  * @returns {array} the coord [row, col]
  */
-function getCoordFromIndex(index) {
-    return [Math.floor(index / grid.length), index % grid.length];
-}
+// function getCoordFromIndex(index) {
+//     return [Math.floor(index / grid.length), index % grid.length];
+// }
 
 
 /**
@@ -293,9 +260,9 @@ function getCoordFromIndex(index) {
  * @param {array} coord - Cell coordinates with [row, column] 
  * @returns {element} The LI element representing the cell.
  */
-function getCellElement(coord) {
-    return document.querySelector(`[data-row='${coord[0]}'][data-col='${coord[1]}']`);
-}
+// function getCellElement(coord) {
+//     return document.querySelector(`[data-row='${coord[0]}'][data-col='${coord[1]}']`);
+// }
 
 
 /**
@@ -303,26 +270,26 @@ function getCellElement(coord) {
  * 
  * @returns {element} The button element to start a new game..
  */
-function createStartButton() {
+// function createStartButton() {
 
-    // Automic new game
-    // setTimeout(() => {
-    //     initializeGame();
-    // }, 1500);
+//     // Automic new game
+//     // setTimeout(() => {
+//     //     initializeGame();
+//     // }, 1500);
 
-    const btn = document.createElement('button');
-    btn.innerText = 'Start new game';
-    btn.addEventListener('click', initializeGame);
-    return btn;
-}
+//     const btn = document.createElement('button');
+//     btn.innerText = 'Start new game';
+//     btn.addEventListener('click', initializeGame);
+//     return btn;
+// }
 
 
 /**
  * Display which player's turn it is.
  */
-function displayCurrentPlayer() {
-    document.getElementById('info').innerText = `Player N°${getPlayerNumber() + 1} ${playerSymbols[getPlayerNumber()]} = ${getPlayerNumber() === aiNumber ? 'AI' : 'HUMAN'}`;
-}
+// function displayCurrentPlayer() {
+//     document.getElementById('info').innerText = `Player N°${getPlayerNumber() + 1} ${playerSymbols[getPlayerNumber()]}`;
+// }
 
 
 /**
@@ -330,21 +297,21 @@ function displayCurrentPlayer() {
  * 
  * @return {number} The player number who play.
  */
-function getPlayerNumber() {
-    return roundCounter % 2;
-}
+// function getPlayerNumber() {
+//     return roundCounter % 2;
+// }
 
 
 /**
  * Create every LI elements needed in the grid
  */
-function fulfillGrid(gridElement) {
-    grid.forEach((row, rowIndex) => {
-        row.forEach((cell, colIndex) => {
-            gridElement.appendChild(getNewCell(rowIndex, colIndex));
-        });
-    });
-}
+// function fulfillGrid(gridElement) {
+//     grid.forEach((row, rowIndex) => {
+//         row.forEach((cell, colIndex) => {
+//             gridElement.appendChild(getNewCell(rowIndex, colIndex));
+//         });
+//     });
+// }
 
 
 /**
@@ -352,92 +319,136 @@ function fulfillGrid(gridElement) {
  * 
  * @param {element} element - The element to empty. 
  */
-function emptyElement(element) {
-    while (element.firstChild) element.firstChild.remove();
-}
+// function emptyElement(element) {
+//     while (element.firstChild) element.firstChild.remove();
+// }
 
 
 /**
  * Returns the coordinate of a random free cell in the grid.
  * @returns Cell coordinates [row, column]
  */
-function getRandomFreeCell() {
-    if (isGridFull()) return null;
+// function getRandomFreeCell() {
+//     if (isGridFull()) return null;
 
-    const coord = [Math.floor(Math.random() * grid.length), Math.floor(Math.random() * grid.length)];
+//     const coord = [Math.floor(Math.random() * grid.length), Math.floor(Math.random() * grid.length)];
 
-    if (!isCellFree(coord)) return getRandomFreeCell();
+//     if (!isCellFree(coord)) return getRandomFreeCell();
 
-    return coord;
-}
+//     return coord;
+// }
 
 
-function displayLearnMessage(message) {
-    document.getElementById('learnMsg').innerText = message;
-}
+// function displayLearnMessage(message) {
+//     document.getElementById('learnMsg').innerText = message;
+// }
 
-function hideStartPanel() {
-    document.getElementById('start-game').classList.add('hidden');
-}
-function showStartPanel() {
-    document.getElementById('start-game').classList.remove('hidden');
-}
+// function hideStartPanel() {
+//     document.getElementById('start-game').classList.add('hidden');
+// }
+// function showStartPanel() {
+//     document.getElementById('start-game').classList.remove('hidden');
+// }
 
 
 // -------- NEURONAL NETWORK LEARNING --------
 
 
 /**
+ * Ask AI to play.
+ * 
+ * @returns void
+ */
+// function playAI() {
+//     brains[getPlayerNumber()]
+//         .askAnswer(formatGridToLayer())
+//         .then(output => {
+//             let coord = getCoordFromIndex(utils.getArrayMaxIndex(output));
+
+//             counterAILoop++;
+//             // Avoid looping in a trap
+//             if (counterAILoop > 100) coord = getRandomFreeCell();
+
+//             // The cell picked by AI is not empty
+//             // Teach him to play on a free cell
+//             // and play again
+//             if (!isCellFree(coord)) {
+//                 // Give as expected output, the value 1 only for the free cell
+//                 // with the best value of the inital output.
+//                 const expectedOutput = Array(9).fill(0);
+//                 const maxIndex = utils.getArrayMaxIndex(output.map((v, i) => isCellFree(getCoordFromIndex(i)) ? v : -1));
+//                 expectedOutput[maxIndex] = 1;
+//                 brains[getPlayerNumber()]
+//                     .learn(expectedOutput)
+//                     .then(playAI);
+//                 return;
+//             }
+
+//             counterAILoop = 0;
+
+//             // Execute the action
+//             executeAction(coord, getPlayerNumber());
+//         });
+// }
+
+
+/**
  * Learn a sample of datas to AI.
  * @param {array} datas 
 */
-async function learnDatas(datas, brain) {
-    let learningTotal = 0;
-    let learningOK = 0;
-    for (const data of datas) {
-        const output = await brain.learnData(data.input, data.expectedOutput);
-        learningCounter++;
-        learningTotal++;
-        if (getArrayMaxIndex(output) === getArrayMaxIndex(data.expectedOutput)) {
-            learningOK++;
-        }
-    }
-    displayLearnMessage(`ratio ${Math.round(learningOK / learningTotal * 100)}%`);
-    document.getElementById('learn-count').innerText = learningCounter;
-}
+// async function learnDatas(datas, brain) {
+//     let learningTotal = 0;
+//     let learningOK = 0;
+//     for (const data of datas) {
+//         const output = await brain.learnData(data.input, data.expectedOutput);
+//         learningCounter++;
+//         learningTotal++;
+//         if (utils.getArrayMaxIndex(output) === utils.getArrayMaxIndex(data.expectedOutput)) {
+//             learningOK++;
+//         }
+//     }
+//     displayLearnMessage(`ratio ${Math.round(learningOK / learningTotal * 100)}%`);
+//     document.getElementById('learn-count').innerText = learningCounter;
+// }
 
 
 /**
  * Teaching AI all the round of the winner in the gaming log.
  * @param {number} winner - The winner number
  */
-async function learnWinnerLog(winner) {
-    // Get all the rounds from the winner
-    // Transform data to input => expected output layers
-    const datas = gamingLog
-        .filter(round => round.player === winner)
-        .map(round => {
-            return {
-                input: round.grid,
-                expectedOutput: getLayerWithAction(round.action)
-            };
-        });
+// async function learnWinnerLog(winner) {
+//     // Get all the rounds from the winner
+//     // Transform data to input => expected output layers
+//     const datas = gamingLog
+//         .filter(round => round.player === winner)
+//         .map(round => {
+//             return {
+//                 input: round.grid,
+//                 expectedOutput: getLayerWithAction(round.action)
+//             };
+//         });
 
         
-    // Learn each round
-    if (playersTypes[0] === 'a') {
-        await learnDatas(datas, brains[0]);
-    }
-    if (playersTypes[1] === 'a') {
-        await learnDatas(datas, brains[1]);
-    }
+//     // Learn each round
+//     if (playersTypes[0] === 'a') {
+//         await learnDatas(datas, brains[0]);
+//     }
+//     if (playersTypes[1] === 'a') {
+//         await learnDatas(datas, brains[1]);
+//     }
 
-    // Append datas to learn to the existing storage
-    datasToLearn.push(...datas);
+    
+//     // for (const ai of this.aiPlayers) {
+//     //     if (ai === null) continue;
+//     //     ai.learnWinnerLog(--winner);
+//     // }
 
-    // Update the storage
-    localStorage.setItem('datasToLearn', JSON.stringify(datasToLearn));
-}
+//     // Append datas to learn to the existing storage
+//     datasToLearn.push(...datas);
+
+//     // Update the storage
+//     localStorage.setItem('datasToLearn', JSON.stringify(datasToLearn));
+// }
 
 
 /**
@@ -446,12 +457,12 @@ async function learnWinnerLog(winner) {
  * @param {array} coord - The row and column nnumbers of the action.
  * @returns {array} The layer with only a 1 value for the pointed cell.
 */
-function getLayerWithAction(coord) {
-    const layer = Array(Math.pow(grid.length, 2)).fill(0);
-    const index = coord[0] * grid.length + coord[1];
-    layer[index] = 1;
-    return layer;
-}
+// function getLayerWithAction(coord) {
+//     const layer = Array(Math.pow(grid.length, 2)).fill(0);
+//     const index = coord[0] * grid.length + coord[1];
+//     layer[index] = 1;
+//     return layer;
+// }
 
 
 /**
@@ -462,11 +473,11 @@ function getLayerWithAction(coord) {
  * @param {number} value - original value
  * @returns {number} reversed value
  */
-function reverseLayerValue(value) {
-    if (value === 0) return 0;
+// function reverseLayerValue(value) {
+//     if (value === 0) return 0;
 
-    return value === 1 ? -1 : 1;
-}
+//     return value === 1 ? -1 : 1;
+// }
 
 
 // -------- DATA MANAGEMENT --------
@@ -476,44 +487,58 @@ function reverseLayerValue(value) {
  * Returns stored datas to learn from the local storage
  * @returns {array} All the datas to learn
  */
-function retrieveDatasToLearnFromStorage() {
-    if (localStorage.getItem('datasToLearn') === null) return [];
+// function retrieveDatasToLearnFromStorage() {
+//     if (localStorage.getItem('datasToLearn') === null) return [];
 
-    return JSON.parse(localStorage.getItem('datasToLearn'));
-}
+//     return JSON.parse(localStorage.getItem('datasToLearn'));
+// }
 
 
 // -------------
 // SCRIPT
 // -------------
 
-let grid,
-    roundCounter,
-    gamingLog,
-    aiNumber,
-    learningCounter = 0,
-    counterAILoop = 0;
-
-let datasToLearn = retrieveDatasToLearnFromStorage();
-document.getElementById('learn-stored').innerText = datasToLearn.length;
-document.getElementById('learn-all').addEventListener('click', async function () {
-    // Shuffle datas
-    datasToLearn.sort((a, b) => 0.5 - Math.random());
-    // learnDatas(datasToLearn, brains[1]);
-    if (playersTypes[0] === 'a') {
-        await learnDatas(datasToLearn, brains[0]);
-    }
-    if (playersTypes[1] === 'a') {
-        await learnDatas(datasToLearn, brains[1]);
-    }
+const game = new TicTacToe();
+document.getElementById('create-btn').addEventListener('click', function() {
+    game.create();
 });
 
-// const brain = new Brain();
-const brains = [new Brain(), new Brain()];
-const playerSymbols = ['⭕', '❌'];
-let playersTypes = ['h', 'h'];
+// let grid,
+//     roundCounter,
+//     gamingLog,
+//     learningCounter = 0,
+//     counterAILoop = 0;
+
+// let datasToLearn = retrieveDatasToLearnFromStorage();
+// document.getElementById('learn-stored').innerText = datasToLearn.length;
+// document.getElementById('learn-all').addEventListener('click', async function () {
+//     // Shuffle datas
+//     datasToLearn.sort((a, b) => 0.5 - Math.random());
+//     // learnDatas(datasToLearn, brains[1]);
+//     if (playersTypes[0] === 'a') {
+//         await learnDatas(datasToLearn, brains[0]);
+//     }
+//     if (playersTypes[1] === 'a') {
+//         await learnDatas(datasToLearn, brains[1]);
+//     }
+// });
+
+// // const brain = new Brain();
+// const brains = [new Brain(), new Brain()];
+// const playerSymbols = ['⭕', '❌'];
+// let playersTypes = ['h', 'h'];
+// let aiPlayers = [null, null];
 
 
-document.getElementById('start-btn').addEventListener('click', initializeGame);
 
-// document.getElementById('info').appendChild(createStartButton());
+// // document.getElementById('info').appendChild(createStartButton());
+
+
+// const a = new AiPlayer();
+
+// a.learnDatas([
+//     {
+//         input: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+//         expectedOutput: [0, 0, 0, 0, 0, 0, 0, 0, 1]
+//     }
+// ]);
