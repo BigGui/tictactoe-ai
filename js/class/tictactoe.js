@@ -11,14 +11,17 @@ export class TicTacToe {
         this.gamingLog = [];
         this.playerSymbols = ['⭕', '❌'];
         this.playersTypes = ['h', 'h'];
-        this.aiPlayers = [null, null];
+        this.aiPlayer = null;
         this.roundCounter = 0;
         this.gridElement = document.getElementById('grid');
 
         // Init data management
         this.datasToLearn = this.retrieveDatasToLearnFromStorage();
         document.getElementById('learn-stored').innerText = this.datasToLearn.length;
-        document.getElementById('learn-all').addEventListener('click', () => this.teachThemTo(60));
+        document.getElementById('learn-all').addEventListener('click', () => {
+            const ratio = parseInt(document.getElementById('learning-ratio').value);
+            this.teachAITo(ratio);
+        });
     }
 
 
@@ -44,13 +47,9 @@ export class TicTacToe {
         // Hide start panel
         this.hideStartPanel();
 
-        this.aiPlayers = this.playersTypes.map((type, playerNb) => {
-            if (type !== 'a') return null;
-            return new AiPlayer({
-                playerNb: playerNb,
-                game: this
-            });
-        });
+        if (this.playersTypes.includes('a')) {
+            this.aiPlayer = new AiPlayer({game: this});
+        }
 
         document.getElementById('info').innerText = '';
 
@@ -98,8 +97,11 @@ export class TicTacToe {
         this.displayCurrentPlayer();
 
         // Ask AI to play on his turn
-        if (this.aiPlayers[this.getPlayerNumber()] !== null) {
-            setTimeout(() => this.aiPlayers[this.getPlayerNumber()].play(), 150);
+        if (this.playersTypes[this.getPlayerNumber()] === 'a') {
+            setTimeout(() => this.aiPlayer.play(), 150);
+        }
+        else if (this.playersTypes[this.getPlayerNumber()] === 'r') {
+            this.playRandom();
         }
     }
 
@@ -159,21 +161,21 @@ export class TicTacToe {
      * @param {array} coord - The row number and column number of the cell [row, column]
      * @param {number} playerNb - The player number [0 | 1]
      */
-    executeAction(coord, playerNb) {
+    executeAction(coord) {
         // Is this cell empty ?
         if (!this.isCellFree(coord)) return;
 
         // Add action to gaming log
         // Reverse layer data for player (1 playerNb === 0)
         this.gamingLog.push({
-            player: playerNb,
-            grid: playerNb === 0 ? this.formatGridToLayer().map(this.reverseLayerValue) : this.formatGridToLayer(),
+            player: this.getPlayerNumber(),
+            grid: this.getPlayerNumber() === 0 ? this.formatGridToLayer().map(this.reverseLayerValue) : this.formatGridToLayer(),
             action: coord
         });
 
         // Add the symbol associated to the current player
-        this.getCellElement(coord).innerText = this.playerSymbols[playerNb];
-        this.grid[coord[0]][coord[1]] = playerNb + 1;
+        this.getCellElement(coord).innerText = this.playerSymbols[this.getPlayerNumber()];
+        this.grid[coord[0]][coord[1]] = this.getPlayerNumber() + 1;
 
         // The game is over
         let winner = this.getWinner();
@@ -186,8 +188,8 @@ export class TicTacToe {
             // The game ends in a draw
             if (winner === true) {
                 // learning human log
-                // this.playersTypes.forEach((type, playerNb) => {
-                //     if (type === 'h') learnWinnerLog(playerNb);
+                // this.playersTypes.forEach((type, this.getPlayerNumber()) => {
+                //     if (type === 'h') learnWinnerLog(this.getPlayerNumber());
                 // });
             }
             else {
@@ -204,8 +206,11 @@ export class TicTacToe {
         this.displayCurrentPlayer();
 
         // Ask AI to play on his turn
-        if (this.aiPlayers[this.getPlayerNumber()] !== null) {
-            setTimeout(() => this.aiPlayers[this.getPlayerNumber()].play(), 150);
+        if (this.playersTypes[this.getPlayerNumber()] === 'a') {
+            setTimeout(() => this.aiPlayer.play(), 150);
+        }
+        else if (this.playersTypes[this.getPlayerNumber()] === 'r') {
+            this.playRandom();
         }
     }
 
@@ -220,9 +225,17 @@ export class TicTacToe {
         const el = event.target;
 
         // Is the click fires on cell ?
-        if (el.tagName !== 'LI') return;
+        if (el.tagName !== 'LI' || this.getWinner() !== false) return;
 
-        this.executeAction([parseInt(el.dataset.row), parseInt(el.dataset.col)], this.getPlayerNumber());
+        this.executeAction([parseInt(el.dataset.row), parseInt(el.dataset.col)]);
+    }
+
+
+    /**
+     * Execute a random action player on the grid.
+     */
+    playRandom() {
+        this.executeAction(this.getRandomFreeCell());
     }
 
 
@@ -263,6 +276,10 @@ export class TicTacToe {
      * @returns {element} The button element to start a new game..
      */
     createStartButton() {
+        if (document.getElementById('autoplay').checked) {
+            setTimeout(() => this.initializeGame(), 1000);
+        }
+
         const btn = document.createElement('button');
         btn.innerText = 'Start new game';
         btn.addEventListener('click', () => {
@@ -336,10 +353,7 @@ export class TicTacToe {
             });
 
         // Learn each round
-        for (const ai of this.aiPlayers) {
-            if (ai === null) continue;
-            ai.learnDatas(datas);
-        }
+        this.aiPlayer.learnDatas(datas);
 
         // Append datas to learn to the existing storage
         this.datasToLearn.push(...datas);
@@ -389,23 +403,17 @@ export class TicTacToe {
     }
 
 
-    async teachThemAll() {
+    async teachAI() {
         // Shuffle datas
         this.datasToLearn.sort((a, b) => 0.5 - Math.random());
 
-        for (const ai of this.aiPlayers) {
-            if (ai === null) continue;
-            await ai.learnDatas(this.datasToLearn);
-        }
+        await this.aiPlayer.learnDatas(this.datasToLearn);
     }
 
-    async teachThemTo(ratio) {
+    async teachAITo(ratio) {
         // Shuffle datas
         this.datasToLearn.sort((a, b) => 0.5 - Math.random());
 
-        for (const ai of this.aiPlayers) {
-            if (ai === null) continue;
-            await ai.learnDatasToRatio(this.datasToLearn, ratio);
-        }
+        await this.aiPlayer.learnDatasToRatio(this.datasToLearn, ratio);
     }
 }

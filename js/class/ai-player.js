@@ -4,7 +4,6 @@ import * as utils from "../utils.js";
 export class AiPlayer {
     constructor(params) {
         this.brain = new Brain();
-        this.playerNb = params.playerNb || 0;
         this.game = params.game || null;
         this.counterLoop = 0;
         this.learningCounter = 0;
@@ -39,7 +38,7 @@ export class AiPlayer {
         // If an AI play the first turn, pick a cell randomly
         if (this.game.roundCounter === 0) {
             // Execute the action
-            this.game.executeAction(this.game.getRandomFreeCell(), this.playerNb);
+            this.game.executeAction(this.game.getRandomFreeCell());
             return;
         }
 
@@ -70,7 +69,7 @@ export class AiPlayer {
                 this.counterLoop = 0;
 
                 // Execute the action
-                this.game.executeAction(coord, this.playerNb);
+                this.game.executeAction(coord);
             });
     }
 
