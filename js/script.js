@@ -4,6 +4,8 @@ import { Brain } from "./class/brain.js";
 // FUNCTIONS
 // -------------
 
+// -------- TIC TAC TOE GAME --------
+
 /**
  * Create a cell element to add to the grid.
  * 
@@ -16,6 +18,61 @@ function getNewCell(rowIndex, colIndex) {
     li.setAttribute('data-row', rowIndex);
     li.setAttribute('data-col', colIndex);
     return li;
+}
+
+
+/**
+ * Start a game
+ */
+function initializeGame() {
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ];
+    roundCounter = Math.floor(Math.random() * 2);
+    gamingLog = [];
+
+    // Define the player number of AI
+    // aiNumber = Math.floor(Math.random() * 2);
+    // aiNumber = 1;
+
+    console.log(
+        document.getElementById('p1').value,
+        document.getElementById('p2').value
+    );
+    // Get players choices
+    playersTypes = [document.getElementById('p1').value, document.getElementById('p2').value];
+
+    if (playersTypes[0] === 'h') playerSymbols[0] = '☺️';
+    if (playersTypes[0] === 'a') playerSymbols[0] = '🖥️';
+    if (playersTypes[1] === 'h') playerSymbols[1] = '🙂';
+    if (playersTypes[1] === 'a') playerSymbols[1] = '🤖';
+
+    // Hide start panel
+    hideStartPanel();
+
+    document.getElementById('info').innerText = '';
+
+    const gridElement = document.getElementById('grid');
+
+    // Remove all existing elements in the grid
+    emptyElement(gridElement);
+
+    // Create all the need LI in the grid
+    fulfillGrid(gridElement);
+
+    // Add the event listener on the grid to give players the ability to play
+    gridElement.addEventListener('click', playHuman);
+
+    // Display the first player on page
+    displayCurrentPlayer();
+
+    // Ask AI to play on his turn
+    if (playersTypes[getPlayerNumber()] === 'a') {
+        setTimeout(() => playAI(), 150);
+    }
+    // if (getPlayerNumber() === aiNumber) playAI();
 }
 
 
@@ -75,6 +132,67 @@ function isArrayFullAndRegular(array) {
  */
 function isCellFree(coord) {
     return grid[coord[0]][coord[1]] === 0;
+}
+
+
+/**
+ * Add a player number to a cell.
+ * 
+ * @param {array} coord - The row number and column number of the cell [row, column]
+ * @param {number} playerNb - The player number [0 | 1]
+ */
+function executeAction(coord, playerNb) {
+
+    // Is this cell empty ?
+    if (!isCellFree(coord)) return;
+
+    // Add action to gaming log
+    // Reverse layer data for player (1 playerNb === 0)
+    gamingLog.push({
+        player: playerNb,
+        grid: playerNb === 0 ? formatGridToLayer().map(reverseLayerValue) : formatGridToLayer(),
+        action: coord
+    });
+
+    // Add the symbol associated to the current player
+    getCellElement(coord).innerText = playerSymbols[playerNb];
+    grid[coord[0]][coord[1]] = playerNb + 1;
+
+    // console.table(grid);
+
+    // The game is over
+    let winner = getWinner();
+    if (winner !== false) {
+        document.getElementById('grid').removeEventListener('click', playHuman);
+        document.getElementById('info').innerText = `GAME OVER`;
+        document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} ${winner - 1 === aiNumber ? 'AI' : 'HUMAN'} win `;
+        document.getElementById('info').appendChild(createStartButton());
+
+        // The game ends in a draw
+        if (winner === true) {
+            // learning human log
+            playersTypes.forEach((type, playerNb) => {
+                if (type === 'h') learnWinnerLog(playerNb);
+            });
+        }
+        else {
+            // There is a winner
+            // Learn winner log
+            // player 1 => 0, player 2 => 1
+            learnWinnerLog(--winner);
+        }
+        return;
+    }
+
+    roundCounter++;
+
+    displayCurrentPlayer();
+
+    // Ask AI to play on his turn
+    // if (playersTypes[getPlayerNumber()] === 'a') playAI();
+    if (playersTypes[getPlayerNumber()] === 'a') {
+        setTimeout(() => playAI(), 150);
+    }
 }
 
 
@@ -157,75 +275,15 @@ function getArrayMaxIndex(array) {
     return maxIndex;
 }
 
+
 /**
- * Returns the row and columns number for a given index between 0 and 8.
+ * Return the row and columns number for a given index between 0 and 8.
  * 
  * @param {number} index  - An index between 0 and 8;
  * @returns {array} the coord [row, col]
  */
 function getCoordFromIndex(index) {
     return [Math.floor(index / grid.length), index % grid.length];
-}
-
-
-/**
- * Add a player number to a cell.
- * 
- * @param {array} coord - The row number and column number of the cell [row, column]
- * @param {number} playerNb - The player number [0 | 1]
- */
-function executeAction(coord, playerNb) {
-
-    // Is this cell empty ?
-    if (!isCellFree(coord)) return;
-
-    // Add action to gaming log
-    // Reverse layer data for player (1 playerNb === 0)
-    gamingLog.push({
-        player: playerNb,
-        grid: playerNb === 0 ? formatGridToLayer().map(reverseLayerValue) : formatGridToLayer(),
-        action: coord
-    });
-
-    // Add the symbol associated to the current player
-    getCellElement(coord).innerText = playerSymbols[playerNb];
-    grid[coord[0]][coord[1]] = playerNb + 1;
-
-    // console.table(grid);
-
-    // The game is over
-    let winner = getWinner();
-    if (winner !== false) {
-        document.getElementById('grid').removeEventListener('click', playHuman);
-        document.getElementById('info').innerText = `GAME OVER`;
-        document.getElementById('info').innerText += winner === true ? ' | nobody win ' : ` | Player N°${winner} ${winner - 1 === aiNumber ? 'AI' : 'HUMAN'} win `;
-        document.getElementById('info').appendChild(createStartButton());
-
-        // The game ends in a draw
-        if (winner === true) {
-            // learning human log
-            playersTypes.forEach((type, playerNb) => {
-                if (type === 'h') learnWinnerLog(playerNb);
-            });
-        }
-        else {
-            // There is a winner
-            // Learn winner log
-            // player 1 => 0, player 2 => 1
-            learnWinnerLog(--winner);
-        }
-        return;
-    }
-
-    roundCounter++;
-
-    displayCurrentPlayer();
-
-    // Ask AI to play on his turn
-    // if (playersTypes[getPlayerNumber()] === 'a') playAI();
-    if (playersTypes[getPlayerNumber()] === 'a') {
-        setTimeout(() => playAI(), 150);
-    }
 }
 
 
@@ -276,60 +334,6 @@ function getPlayerNumber() {
     return roundCounter % 2;
 }
 
-/**
- * Start a game
- */
-function initializeGame() {
-    grid = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-    ];
-    roundCounter = Math.floor(Math.random() * 2);
-    gamingLog = [];
-
-    // Define the player number of AI
-    // aiNumber = Math.floor(Math.random() * 2);
-    // aiNumber = 1;
-
-    console.log(
-        document.getElementById('p1').value,
-        document.getElementById('p2').value
-    );
-    // Get players choices
-    playersTypes = [document.getElementById('p1').value, document.getElementById('p2').value];
-
-    if (playersTypes[0] === 'h') playerSymbols[0] = '☺️';
-    if (playersTypes[0] === 'a') playerSymbols[0] = '🖥️';
-    if (playersTypes[1] === 'h') playerSymbols[1] = '🙂';
-    if (playersTypes[1] === 'a') playerSymbols[1] = '🤖';
-
-    // Hide start panel
-    hideStartPanel();
-
-    document.getElementById('info').innerText = '';
-
-    const gridElement = document.getElementById('grid');
-
-    // Remove all existing elements in the grid
-    emptyElement(gridElement);
-
-    // Create all the need LI in the grid
-    fulfillGrid(gridElement);
-
-    // Add the event listener on the grid to give players the ability to play
-    gridElement.addEventListener('click', playHuman);
-
-    // Display the first player on page
-    displayCurrentPlayer();
-
-    // Ask AI to play on his turn
-    if (playersTypes[getPlayerNumber()] === 'a') {
-        setTimeout(() => playAI(), 150);
-    }
-    // if (getPlayerNumber() === aiNumber) playAI();
-}
-
 
 /**
  * Create every LI elements needed in the grid
@@ -368,18 +372,38 @@ function getRandomFreeCell() {
 }
 
 
-/**
- * Returns a value of the input layer in terms of player.
- * -1 => 1
- * 1 => -1
- * 0 => 0
- * @param {number} value - original value
- * @returns {number} reversed value
- */
-function reverseLayerValue(value) {
-    if (value === 0) return 0;
+function displayLearnMessage(message) {
+    document.getElementById('learnMsg').innerText = message;
+}
 
-    return value === 1 ? -1 : 1;
+function hideStartPanel() {
+    document.getElementById('start-game').classList.add('hidden');
+}
+function showStartPanel() {
+    document.getElementById('start-game').classList.remove('hidden');
+}
+
+
+// -------- NEURONAL NETWORK LEARNING --------
+
+
+/**
+ * Learn a sample of datas to AI.
+ * @param {array} datas 
+*/
+async function learnDatas(datas, brain) {
+    let learningTotal = 0;
+    let learningOK = 0;
+    for (const data of datas) {
+        const output = await brain.learnData(data.input, data.expectedOutput);
+        learningCounter++;
+        learningTotal++;
+        if (getArrayMaxIndex(output) === getArrayMaxIndex(data.expectedOutput)) {
+            learningOK++;
+        }
+    }
+    displayLearnMessage(`ratio ${Math.round(learningOK / learningTotal * 100)}%`);
+    document.getElementById('learn-count').innerText = learningCounter;
 }
 
 
@@ -417,37 +441,35 @@ async function learnWinnerLog(winner) {
 
 
 /**
- * Learn a simple of datas to AI.
- * @param {array} datas 
- */
-async function learnDatas(datas, brain) {
-    let learningTotal = 0;
-    let learningOK = 0;
-    for (const data of datas) {
-        const output = await brain.learnData(data.input, data.expectedOutput);
-        learningCounter++;
-        learningTotal++;
-        if (getArrayMaxIndex(output) === getArrayMaxIndex(data.expectedOutput)) {
-            learningOK++;
-        }
-    }
-    displayLearnMessage(`ratio ${Math.round(learningOK / learningTotal * 100)}%`);
-    document.getElementById('learn-count').innerText = learningCounter;
-}
-
-
-/**
  * Returns a layer with '1' for the pointed cell.
  * 
  * @param {array} coord - The row and column nnumbers of the action.
  * @returns {array} The layer with only a 1 value for the pointed cell.
- */
+*/
 function getLayerWithAction(coord) {
     const layer = Array(Math.pow(grid.length, 2)).fill(0);
     const index = coord[0] * grid.length + coord[1];
     layer[index] = 1;
     return layer;
 }
+
+
+/**
+ * Returns a value of the input layer in terms of player.
+ * -1 => 1
+ * 1 => -1
+ * 0 => 0
+ * @param {number} value - original value
+ * @returns {number} reversed value
+ */
+function reverseLayerValue(value) {
+    if (value === 0) return 0;
+
+    return value === 1 ? -1 : 1;
+}
+
+
+// -------- DATA MANAGEMENT --------
 
 
 /**
@@ -458,18 +480,6 @@ function retrieveDatasToLearnFromStorage() {
     if (localStorage.getItem('datasToLearn') === null) return [];
 
     return JSON.parse(localStorage.getItem('datasToLearn'));
-}
-
-
-function displayLearnMessage(message) {
-    document.getElementById('learnMsg').innerText = message;
-}
-
-function hideStartPanel() {
-    document.getElementById('start-game').classList.add('hidden');
-}
-function showStartPanel() {
-    document.getElementById('start-game').classList.remove('hidden');
 }
 
 
