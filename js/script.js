@@ -1,5 +1,4 @@
 import { Brain } from "./class/brain.js";
-import { Layer } from "./class/layer.js";
 
 // -------------
 // FUNCTIONS
@@ -101,7 +100,7 @@ function playHuman(event) {
  * @returns void
  */
 function playAI() {
-    brain
+    brains[getPlayerNumber()]
         .askAnswer(formatGridToLayer())
         .then(output => {
             let coord = getCoordFromIndex(getArrayMaxIndex(output));
@@ -119,7 +118,7 @@ function playAI() {
                 const expectedOutput = Array(9).fill(0);
                 const maxIndex = getArrayMaxIndex(output.map((v, i) => isCellFree(getCoordFromIndex(i)) ? v : -1));
                 expectedOutput[maxIndex] = 1;
-                brain
+                brains[getPlayerNumber()]
                     .learn(expectedOutput)
                     .then(playAI);
                 return;
@@ -205,7 +204,9 @@ function executeAction(coord, playerNb) {
         // The game ends in a draw
         if (winner === true) {
             // learning human log
-            learnWinnerLog(aiNumber === 1 ? 0 : 1);
+            playersTypes.forEach((type, playerNb) => {
+                if (type === 'h') learnWinnerLog(playerNb);
+            });
         }
         else {
             // There is a winner
@@ -221,7 +222,10 @@ function executeAction(coord, playerNb) {
     displayCurrentPlayer();
 
     // Ask AI to play on his turn
-    if (getPlayerNumber() === aiNumber) playAI();
+    // if (playersTypes[getPlayerNumber()] === 'a') playAI();
+    if (playersTypes[getPlayerNumber()] === 'a') {
+        setTimeout(() => playAI(), 150);
+    }
 }
 
 
@@ -242,6 +246,12 @@ function getCellElement(coord) {
  * @returns {element} The button element to start a new game..
  */
 function createStartButton() {
+
+    // Automic new game
+    // setTimeout(() => {
+    //     initializeGame();
+    // }, 1500);
+
     const btn = document.createElement('button');
     btn.innerText = 'Start new game';
     btn.addEventListener('click', initializeGame);
@@ -275,16 +285,27 @@ function initializeGame() {
         [0, 0, 0],
         [0, 0, 0]
     ];
-    roundCounter = 0;
+    roundCounter = Math.floor(Math.random() * 2);
     gamingLog = [];
 
     // Define the player number of AI
-    aiNumber = Math.floor(Math.random() * 2);
+    // aiNumber = Math.floor(Math.random() * 2);
     // aiNumber = 1;
 
-    playerSymbols.fill('☺️');
-    playerSymbols[aiNumber] = '🤖';
+    console.log(
+        document.getElementById('p1').value,
+        document.getElementById('p2').value
+    );
+    // Get players choices
+    playersTypes = [document.getElementById('p1').value, document.getElementById('p2').value];
 
+    if (playersTypes[0] === 'h') playerSymbols[0] = '☺️';
+    if (playersTypes[0] === 'a') playerSymbols[0] = '🖥️';
+    if (playersTypes[1] === 'h') playerSymbols[1] = '🙂';
+    if (playersTypes[1] === 'a') playerSymbols[1] = '🤖';
+
+    // Hide start panel
+    hideStartPanel();
 
     document.getElementById('info').innerText = '';
 
@@ -303,7 +324,10 @@ function initializeGame() {
     displayCurrentPlayer();
 
     // Ask AI to play on his turn
-    if (getPlayerNumber() === aiNumber) playAI();
+    if (playersTypes[getPlayerNumber()] === 'a') {
+        setTimeout(() => playAI(), 150);
+    }
+    // if (getPlayerNumber() === aiNumber) playAI();
 }
 
 
@@ -375,8 +399,14 @@ async function learnWinnerLog(winner) {
             };
         });
 
+        
     // Learn each round
-    await learnDatas(datas);
+    if (playersTypes[0] === 'a') {
+        await learnDatas(datas, brains[0]);
+    }
+    if (playersTypes[1] === 'a') {
+        await learnDatas(datas, brains[1]);
+    }
 
     // Append datas to learn to the existing storage
     datasToLearn.push(...datas);
@@ -390,7 +420,7 @@ async function learnWinnerLog(winner) {
  * Learn a simple of datas to AI.
  * @param {array} datas 
  */
-async function learnDatas(datas) {
+async function learnDatas(datas, brain) {
     let learningTotal = 0;
     let learningOK = 0;
     for (const data of datas) {
@@ -435,6 +465,13 @@ function displayLearnMessage(message) {
     document.getElementById('learnMsg').innerText = message;
 }
 
+function hideStartPanel() {
+    document.getElementById('start-game').classList.add('hidden');
+}
+function showStartPanel() {
+    document.getElementById('start-game').classList.remove('hidden');
+}
+
 
 // -------------
 // SCRIPT
@@ -449,13 +486,24 @@ let grid,
 
 let datasToLearn = retrieveDatasToLearnFromStorage();
 document.getElementById('learn-stored').innerText = datasToLearn.length;
-document.getElementById('learn-all').addEventListener('click', function () {
+document.getElementById('learn-all').addEventListener('click', async function () {
     // Shuffle datas
     datasToLearn.sort((a, b) => 0.5 - Math.random());
-    learnDatas(datasToLearn);
+    // learnDatas(datasToLearn, brains[1]);
+    if (playersTypes[0] === 'a') {
+        await learnDatas(datasToLearn, brains[0]);
+    }
+    if (playersTypes[1] === 'a') {
+        await learnDatas(datasToLearn, brains[1]);
+    }
 });
 
-const brain = new Brain();
+// const brain = new Brain();
+const brains = [new Brain(), new Brain()];
 const playerSymbols = ['⭕', '❌'];
+let playersTypes = ['h', 'h'];
 
-initializeGame();
+
+document.getElementById('start-btn').addEventListener('click', initializeGame);
+
+// document.getElementById('info').appendChild(createStartButton());

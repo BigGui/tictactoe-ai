@@ -13,6 +13,10 @@ ul, li {
     list-style: none;
 }
 
+.hidden {
+    display: none;
+}
+
 .main-ttl {
     height: 4rem;
     margin: 0 auto;
@@ -29,7 +33,8 @@ ul, li {
     
 }
 
-.info {
+.info,
+.start-game {
     height: 2rem;
     text-align: center;
 }
