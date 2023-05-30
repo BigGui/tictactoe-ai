@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,51 +8,139 @@
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1 class="main-ttl">Tic Tac Toe</h1>
-    <section class="learn">
-        <p>
-            Total: <span id="learn-count">0</span>
-        </p>
-        <p>
-            <button type="button" id="learn-all">Learn <span id="learn-stored">0</span></button>
-            <input type="number" name="learning-ratio" id="learning-ratio" value="60" size="3">
-            <label for="autoplay">
-                <input type="checkbox" name="autoplay" id="autoplay"> auto play
-            </label>
-        </p>
-        <p class="learn-msg" id="learnMsg">
-        </p>
-    </section>
-    <section class="start-game" id="start-game">
-        <p>
-            Player 1: 
-            <select name="p1" id="p1">
-                <option value="h">human</option>
-                <option value="a">ai</option>
-                <option value="r">random</option>
-            </select>
-        </p>
-        <p>
-            Player 2: 
-            <select name="p2" id="p2">
-                <option value="h">human</option>
-                <option value="a">ai</option>
-            </select>
-        </p>
-        <p>
-            <button type="button" id="create-btn">Create game</button>
-        </p>
-    </section>
-    <section class="info" id="info"></section>
-    <ul class="grid" id="grid">
-    </ul>
 
-    <div class="progress-win">
-        <div class="progress-win-one" id="progress-0">player 1</div>
-        <div class="progress-win-equality" id="progress-eq">🟰</div>
-        <div class="progress-win-two" id="progress-1">player 2</div>
-    </div>
+<body>
+    <main class="container">
+
+        <section class="bloc artificial bloc-hidden" id="bloc-artificial">
+            <h2>
+                Réseau de neurones artificiels
+            </h2>
+            <article>
+                <div class="network">
+                    <!-- Input Layer -->
+                    <div>
+                        <ul class="layer layer-grid arrow-right" id="layer-input">
+                            <li class="neuron">1</li>
+                            <li class="neuron">2</li>
+                            <li class="neuron">3</li>
+                            <li class="neuron">4</li>
+                            <li class="neuron">5</li>
+                            <li class="neuron">6</li>
+                            <li class="neuron">7</li>
+                            <li class="neuron">8</li>
+                            <li class="neuron">9</li>
+                        </ul>
+                        <!-- <h4>Couche d'entrée</h4> -->
+                    </div>
+
+                    <!-- Intermediate Layers -->
+                    <div class="network-inter" id="hidden-layers">
+                        <ul class="layer layer-inter arrow-right" data-neurons="30"></ul>
+                        <ul class="layer layer-inter arrow-right" data-neurons="30"></ul>
+                        <ul class="layer layer-inter arrow-right" data-neurons="50"></ul>
+                        <ul class="layer layer-inter arrow-right" data-neurons="50"></ul>
+                        <ul class="layer layer-inter arrow-right" data-neurons="30"></ul>
+                        <ul class="layer layer-inter arrow-right" data-neurons="30"></ul>
+                    </div>
+
+                    <!-- Output Layer -->
+                    <div>
+                        <ul class="layer layer-grid" id="layer-output">
+                            <li class="neuron">1</li>
+                            <li class="neuron">2</li>
+                            <li class="neuron">3</li>
+                            <li class="neuron">4</li>
+                            <li class="neuron">5</li>
+                            <li class="neuron">6</li>
+                            <li class="neuron">7</li>
+                            <li class="neuron">8</li>
+                            <li class="neuron">9</li>
+                        </ul>
+                        <!-- <h4>Couche de sortie</h4> -->
+                    </div>
+                </div>
+            </article>
+            <p class="neuron-info">
+                &nbsp;<span class="neuron neuron-xxs" style="background-color:red"></span> = 1 : ses pions en entrée, sa
+                décision en sortie (valeur maximum)<br>
+                &nbsp;<span class="neuron neuron-xxs" style="background-color:white"></span> = 0 : case vide en
+                entrée<br>
+                &nbsp;<span class="neuron neuron-xxs" style="background-color:blue"></span> = -1 : pion de l'adversaire
+                en entrée<br>
+            </p>
+            <article>
+                <h3>Apprentissage (<span id="learn-stored">0</span> actions stockées)</h3>
+                <p>
+                    <button type="button" class="button" id="learn-all">Commencer l'apprentissage</button>
+                </p>
+                <div class="progress-learn">
+                    <div class="progress-learn-value" id="progress-learn">
+                        <span class="loading hidden" id="learn-spinner"></span>
+                        <span class="percent">0 %</span>
+                    </div>
+                </div>
+                <div class="progress-learn-count" id="learn-count">Aucun apprentissage</div>
+            </article>
+        </section>
+
+        <section class="bloc game">
+            <h1 class="main-ttl">Tic Tac Toe</h1>
+
+            <section class="learn">
+                <article class="start-game" id="start-game">
+                    <p>
+                        Joueur 1:
+                        <select name="p1" id="p1">
+                            <option value="h">humain</option>
+                            <option value="a">intelligence artifielle</option>
+                            <option value="r">aléatoire</option>
+                        </select>
+                    </p>
+                    <p>
+                        Joueur 2:
+                        <select name="p2" id="p2">
+                            <option value="h">humain</option>
+                            <option value="a">intelligence artifielle</option>
+                        </select>
+                    </p>
+                    <p>
+                        <button type="button" class="button" id="create-btn">Commencer</button>
+                    </p>
+                </article>
+                <article id="game-info" class="game-info hidden">
+                    <label for="autoplay" class="autoplay">
+                        <input type="checkbox" name="autoplay" id="autoplay"> auto play
+                    </label>
+                    <div class="info" id="info"></div>
+                </article>
+            </section>
+
+            <ul class="grid" id="grid"></ul>
+
+            <section>
+                <div class="victories-ttl">
+                    <h2>Victoires</h2>
+                    <button type="button" class="button" id="reset-counter">reset</button>
+                </div>
+                <div class="progress-win">
+                    <div class="progress-win-one" id="progress-0">
+                        <span class="symbol">⭕</span>
+                        <span class="percent">0 %</span>
+                    </div>
+                    <div class="progress-win-two" id="progress-1">
+                        <span class="percent">0 %</span>
+                        <span class="symbol">❌</span>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+    </main>
+
+
+
     <script type="module" src="js/script.js"></script>
 </body>
+
 </html>

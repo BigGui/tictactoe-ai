@@ -28,9 +28,23 @@ export function isArrayFullAndRegular(array) {
 export function getRatioFromArray(array, nb) {
     const slice = array.slice(nb * -1);
     return slice.reduce((a, b) => a + b, 0) / slice.length * 100;
-} 
-
-export function getRandomFromArray(array) {
-    return array[Math.floor(Math.random()*array.length)];
 }
 
+export function getRandomFromArray(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+export function getNeuronColor(value) {
+    if (value <= -1) {
+        return "blue";
+    } else if (value >= 1) {
+        return "red";
+    }
+    else if (value > -1 && value < 0) {
+        return `rgba(0, 0, 255, ${value * -1})`;
+    }
+    else if (value > 0 && value < 1) {
+        return `rgba(255, 0, 0, ${value})`;
+    }
+    return `#fff`;
+}

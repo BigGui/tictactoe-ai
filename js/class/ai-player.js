@@ -8,6 +8,8 @@ export class AiPlayer {
         this.counterLoop = 0;
         this.learningCounter = 0;
         this.learningRatio = null;
+        this.learningList = [];
+        this.isLearning = false;
     }
 
     /**
@@ -17,7 +19,6 @@ export class AiPlayer {
     async learnDatas(datas) {
         let learningTotal = 0;
         let learningOK = 0;
-        console.log('starting learning process...');
         for (const data of datas) {
             const output = await this.brain.learnData(data.input, data.expectedOutput);
             this.learningCounter++;
@@ -26,33 +27,42 @@ export class AiPlayer {
                 learningOK++;
             }
         }
-
-        this.learningRatio = learningOK / learningTotal * 100;
-        console.log('learning process is over ', `ratio ${Math.round(this.learningRatio)}%`);
-        document.getElementById('learnMsg').innerText = `ratio ${Math.round(this.learningRatio)}%`;
     }
 
-    async learnDatasToRatio(datas, ratio) {
-        let learningList = [];
-        console.log('starting learning process...');
-    
-        while (learningList.length < 5000 || this.learningRatio < ratio || learningList.length > 200000) {
-            // Get a random data from sample
-            const data = utils.getRandomFromArray(datas);
+    learnDatasToRatio(datas) {    
+        // Get a random data from sample
+        const data = utils.getRandomFromArray(datas);
 
-            // Ask AI to learn this data and get his output
-            const output = await this.brain.learnData(data.input, data.expectedOutput);
+        // Ask AI to learn this data and get his output
+        this.brain
+            .learnData(data.input, data.expectedOutput)
+            .then(output => {
+                // Compare this output to the expected output and add the result to the learning list result (0 or 1)
+                this.learningList.push(utils.getArrayMaxIndex(output) === utils.getArrayMaxIndex(data.expectedOutput) ? 1 : 0);
+                
+                // Get ratio of success for the last 1000 datas
+                if (this.learningList.length % 500 === 0) {
+                    this.learningRatio = utils.getRatioFromArray(this.learningList, 5000);
+                    console.log('...', this.learningList.length, '=>', this.learningRatio, '%');
 
-            // Compare this output to the expected output and add the result to the learning list result (0 or 1)
-            learningList.push(utils.getArrayMaxIndex(output) === utils.getArrayMaxIndex(data.expectedOutput) ? 1 : 0);
-            
-            // Get ratio of success for the last 1000 datas
-            if (learningList.length % 500 === 0) {
-                this.learningRatio = utils.getRatioFromArray(learningList, 5000);
-                console.log('...', learningList.length, '=>', this.learningRatio, '%');
-            }
-        }
-        console.log('learning process is over ', `ratio ${Math.round(this.learningRatio)}%`);
+                    document.getElementById('learn-count').innerText = `${this.learningList.length} actions apprises`;
+                    document.getElementById('progress-learn').style.width = `${this.learningRatio.toFixed(2)}%`;
+                    document.querySelector('#progress-learn .percent').innerText = `${this.learningRatio.toFixed(1)}% de bonnes réponses`;
+                }
+
+                if (this.isLearning) {
+                    if (this.learningList.length % 500 === 0) {
+                        setTimeout(() => this.learnDatasToRatio(datas), 200);
+                    }
+                    else {
+                        this.learnDatasToRatio(datas);
+                    }
+                }
+                else {
+                    console.log('learning process is over ', `ratio ${Math.round(this.learningRatio)}%`);
+                    document.getElementById('learn-spinner').classList.add('hidden');
+                }
+            });
     }
 
     /**
@@ -66,9 +76,14 @@ export class AiPlayer {
             return;
         }
 
+        const input = this.game.formatGridToLayer();
+
         this.brain
-            .askAnswer(this.game.formatGridToLayer())
+            .askAnswer(input)
             .then(output => {
+
+                this.showNetwork(input, output);
+
                 let coord = this.game.getCoordFromIndex(utils.getArrayMaxIndex(output));
 
                 this.counterLoop++;
@@ -97,5 +112,21 @@ export class AiPlayer {
             });
     }
 
+    showNetwork(input, output) {
+        input.forEach((value, i) => {
+            document.querySelector(`#layer-input .neuron:nth-child(${i+1})`).style.backgroundColor = utils.getNeuronColor(value);
+            document.querySelector(`#layer-input .neuron:nth-child(${i+1})`).innerText = value.toFixed(1);
+        });
+        output.forEach((value, i) => {
+            document.querySelector(`#layer-output .neuron:nth-child(${i+1})`).style.backgroundColor = utils.getNeuronColor(value);
+            document.querySelector(`#layer-output .neuron:nth-child(${i+1})`).innerText = value.toFixed(1);
+        });
+        this.brain.layers.forEach((layer, i) => {
+            if (i === 0 || i > 6) return;
+            layer.getOutputs().forEach((value, j) => {
+                document.querySelector(`#hidden-layers .layer:nth-child(${i}) .neuron:nth-child(${j+1})`).style.backgroundColor = utils.getNeuronColor(value);
+            });
+        });
+    }
 
 }
