@@ -16,27 +16,33 @@ export class TicTacToe {
         this.gridElement = document.getElementById('grid');
         this.gameWinners = [];
         
-        // Init data management
-        this.datasToLearn = this.retrieveDatasToLearnFromStorage();
-        document.getElementById('learn-stored').innerText = this.datasToLearn.length;
-        document.getElementById('learn-all').addEventListener('click', () => {
-            this.teachAI();
-        });
-        document.getElementById('reset-counter').addEventListener('click', () => {
-            this.gameWinners = [];
-            this.updateWinnerProgress();
-            document.getElementById(`progress-0`).style.width = '0';
-            document.getElementById(`progress-1`).style.width = '0';
-        });
+        this.initDataManagement();
     }
 
-
+    /**
+     * Hide the start panel.
+     */
     hideStartPanel() {
         document.getElementById('start-game').classList.add('hidden');
     }
+    
+    /**
+     * Initialize data management.
+     */
+    initDataManagement() {
+        this.datasToLearn = this.retrieveDatasToLearnFromStorage();
+        document.getElementById('learn-stored').innerText = this.datasToLearn.length;
 
-    showStartPanel() {
-        document.getElementById('start-game').classList.remove('hidden');
+        // Manage learning button
+        document.getElementById('learn-all').addEventListener('click', () => {
+            this.teachAI();
+        });
+
+        // Manage reset counter button
+        document.getElementById('reset-counter').addEventListener('click', () => {
+            this.gameWinners = [];
+            this.updateWinnerProgress();
+        });
     }
 
     /**
@@ -59,6 +65,7 @@ export class TicTacToe {
         // Hide start panel
         this.hideStartPanel();
 
+        // Create AI player if needed
         if (this.playersTypes.includes('a')) {
             this.aiPlayer = new AiPlayer({game: this});
             document.getElementById('bloc-artificial').classList.remove('bloc-hidden');
@@ -69,11 +76,10 @@ export class TicTacToe {
         this.initializeGame();
 
         document.getElementById('game-info').classList.remove('hidden');
-
     }
 
     /**
-     * Create a cell element to add to the grid.
+     * Create a cell element for the grid.
      * 
      * @param {number} rowIndex - The row number of the cell
      * @param {number} colIndex - The column number of the cell
@@ -125,6 +131,10 @@ export class TicTacToe {
         return this.grid.flat().every(v => v !== 0);
     }
 
+    /**
+     * Return the current game result
+     * @returns {bool|number} false => game is not over | true => game ends in a draw | number => the winner number
+     */
     getWinner() {
         const diagonals = [[], []];
 
@@ -227,7 +237,7 @@ export class TicTacToe {
 
             // The game ends in a draw
             if (winner === true) {
-                // learning human log
+                // learning human log only
                 // this.playersTypes.forEach((type, this.getPlayerNumber()) => {
                 //     if (type === 'h') learnWinnerLog(this.getPlayerNumber());
                 // });
@@ -254,8 +264,20 @@ export class TicTacToe {
         }
     }
 
+    /**
+     * Update winners progress bar.
+     */
     updateWinnerProgress() {
         const winners = this.gameWinners.slice(-300);
+
+        // Counter is empty
+        if (winners.length === 0) {
+            for (const i in this.playerSymbols) {
+                document.getElementById(`progress-${i}`).style.width = '0';
+                document.querySelector(`#progress-${i} .percent`).innerText = '0';
+            }
+            return;
+        }
 
         for (const i in this.playerSymbols) {
             const nb = winners.filter(p => p == i).length;
@@ -457,17 +479,17 @@ export class TicTacToe {
         if (this.aiPlayer.isLearning) {
             this.aiPlayer.isLearning = false;
             document.getElementById('learn-all').innerText = "Commencer l'apprentissage";
+            document.getElementById('learn-spinner').classList.add('hidden');
             return;
         }
 
         // Shuffle datas
         this.datasToLearn.sort((a, b) => 0.5 - Math.random());
         
-        console.log('starting learning process...');
         document.getElementById('learn-spinner').classList.remove('hidden');
         document.getElementById('learn-all').innerText = "Arrêter l'apprentissage";
 
         this.aiPlayer.isLearning = true;
-        this.aiPlayer.learnDatasToRatio(this.datasToLearn);
+        this.aiPlayer.learnDataRecursively(this.datasToLearn);
     }
 }

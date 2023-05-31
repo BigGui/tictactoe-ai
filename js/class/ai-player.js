@@ -29,7 +29,11 @@ export class AiPlayer {
         }
     }
 
-    learnDatasToRatio(datas) {    
+    /**
+     * Teach randomly and recursively a set of datas to the brain
+     * @param {array} datas - The sample of data to learn 
+     */
+    learnDataRecursively(datas) {
         // Get a random data from sample
         const data = utils.getRandomFromArray(datas);
 
@@ -39,30 +43,32 @@ export class AiPlayer {
             .then(output => {
                 // Compare this output to the expected output and add the result to the learning list result (0 or 1)
                 this.learningList.push(utils.getArrayMaxIndex(output) === utils.getArrayMaxIndex(data.expectedOutput) ? 1 : 0);
-                
-                // Get ratio of success for the last 1000 datas
+
+                // Get ratio of success for the last 5000 datas
                 if (this.learningList.length % 500 === 0) {
                     this.learningRatio = utils.getRatioFromArray(this.learningList, 5000);
-                    console.log('...', this.learningList.length, '=>', this.learningRatio, '%');
-
-                    document.getElementById('learn-count').innerText = `${this.learningList.length} actions apprises`;
-                    document.getElementById('progress-learn').style.width = `${this.learningRatio.toFixed(2)}%`;
-                    document.querySelector('#progress-learn .percent').innerText = `${this.learningRatio.toFixed(1)}% de bonnes réponses`;
+                    this.updateLearningProgressBar();
                 }
 
-                if (this.isLearning) {
-                    if (this.learningList.length % 500 === 0) {
-                        setTimeout(() => this.learnDatasToRatio(datas), 200);
-                    }
-                    else {
-                        this.learnDatasToRatio(datas);
-                    }
+                if (!this.isLearning) return;
+
+                // 200ms break each 500 datas
+                if (this.learningList.length % 500 === 0) {
+                    setTimeout(() => this.learnDataRecursively(datas), 200);
+                    return;
                 }
-                else {
-                    console.log('learning process is over ', `ratio ${Math.round(this.learningRatio)}%`);
-                    document.getElementById('learn-spinner').classList.add('hidden');
-                }
+
+                this.learnDataRecursively(datas);
             });
+    }
+
+    /**
+     * Update learning progress bar display.
+     */
+    updateLearningProgressBar() {
+        document.getElementById('learn-count').innerText = `${this.learningList.length} actions apprises`;
+        document.getElementById('progress-learn').style.width = `${this.learningRatio.toFixed(2)}%`;
+        document.querySelector('#progress-learn .percent').innerText = `${this.learningRatio.toFixed(1)}% de bonnes réponses`;
     }
 
     /**
@@ -114,17 +120,17 @@ export class AiPlayer {
 
     showNetwork(input, output) {
         input.forEach((value, i) => {
-            document.querySelector(`#layer-input .neuron:nth-child(${i+1})`).style.backgroundColor = utils.getNeuronColor(value);
-            document.querySelector(`#layer-input .neuron:nth-child(${i+1})`).innerText = value.toFixed(1);
+            document.querySelector(`#layer-input .neuron:nth-child(${i + 1})`).style.backgroundColor = utils.getNeuronColor(value);
+            document.querySelector(`#layer-input .neuron:nth-child(${i + 1})`).innerText = value.toFixed(1);
         });
         output.forEach((value, i) => {
-            document.querySelector(`#layer-output .neuron:nth-child(${i+1})`).style.backgroundColor = utils.getNeuronColor(value);
-            document.querySelector(`#layer-output .neuron:nth-child(${i+1})`).innerText = value.toFixed(1);
+            document.querySelector(`#layer-output .neuron:nth-child(${i + 1})`).style.backgroundColor = utils.getNeuronColor(value);
+            document.querySelector(`#layer-output .neuron:nth-child(${i + 1})`).innerText = value.toFixed(1);
         });
         this.brain.layers.forEach((layer, i) => {
             if (i === 0 || i > 6) return;
             layer.getOutputs().forEach((value, j) => {
-                document.querySelector(`#hidden-layers .layer:nth-child(${i}) .neuron:nth-child(${j+1})`).style.backgroundColor = utils.getNeuronColor(value);
+                document.querySelector(`#hidden-layers .layer:nth-child(${i}) .neuron:nth-child(${j + 1})`).style.backgroundColor = utils.getNeuronColor(value);
             });
         });
     }
