@@ -14,6 +14,9 @@
     box-sizing: border-box;
 }
 
+
+/* ---------- RESET CSS ----------  */
+
 body,
 p,
 h1,
@@ -39,18 +42,6 @@ body {
     display: none !important;
 }
 
-.main-ttl {
-    font-size: 3rem;
-    text-align: center;
-}
-
-.info,
-.start-game {
-    min-height: 5rem;
-    text-align: center;
-}
-
-
 .container {
     display: grid;
     grid-template-columns: 1fr 400px;
@@ -70,6 +61,30 @@ body {
 
 .bloc-hidden {
     visibility: hidden;
+}
+
+.main-ttl {
+    font-size: 3rem;
+    text-align: center;
+}
+
+.start-game {
+    min-height: 5rem;
+    text-align: center;
+}
+
+.autoplay {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    font-size: 1rem;
+}
+
+.game-info {
+    position: relative;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
 /* GRID */
@@ -96,7 +111,7 @@ body {
     background-color: var(--secondary-color);
 }
 
-/* PROGRESS WIN */
+/* PROGRESS BARS */
 
 .progress-win {
     display: flex;
@@ -154,6 +169,12 @@ body {
 
 }
 
+.progress-learn-count {
+    font-size: .8rem;
+    font-style: italic;
+}
+
+/* LOADING SPINNER */
 
 .loading {
     display: inline-block;
@@ -183,6 +204,7 @@ body {
 
 
 /* NEURONAL NETWORK  */
+
 .network,
 .network-inter {
     display: flex;
@@ -213,6 +235,8 @@ body {
     grid-template-rows: repeat(3, 1fr);
 }
 
+/* NEURON  */
+
 .neuron {
     width: 2rem;
     height: 2rem;
@@ -237,6 +261,25 @@ body {
     font-size: .8rem;
 }
 
+.arrow-right {
+    position: relative;
+}
+
+.arrow-right::after {
+    content: "";
+    position: absolute;
+    right: -2rem;
+    top: calc(50% - 2rem);
+    width: 0;
+    height: 0;
+    border-top: 2rem solid transparent;
+    border-bottom: 2rem solid transparent;
+    border-left: 1.5rem solid var(--third-color);
+    opacity: .5;
+}
+
+/* BUTTONS  */
+
 .button {
     border: none;
     padding: .5rem 1rem;
@@ -253,51 +296,17 @@ body {
     background-color: var(--fourth-color);
 }
 
-.autoplay {
-    position: absolute;
-    left: 0;
-    top: 50%;
-}
+/* TITLE WITH BUTTON */
 
-.game-info {
-    position: relative;
-}
-
-.info {
-    font-size: 2rem;
-}
-
-.progress-count,
-.progress-learn-count {
-    font-size: .8rem;
-    font-style: italic;
-}
-
-.arrow-right {
-    position: relative;
-}
-
-.arrow-right::after {
-    content: "";
-    position: absolute;
-    right: -2rem;
-    top: calc(50% - 2rem);
-    width: 0;
-    height: 0;
-
-    border-top: 2rem solid transparent;
-    border-bottom: 2rem solid transparent;
-
-    border-left: 1.5rem solid var(--third-color);
-    opacity: .5;
-}
-
-.victories-ttl {
+.ttl-with-button {
     display: flex;
     justify-content: space-between;
-    margin: 1rem 0  ;
+    margin: 1rem 0;
 }
 
-.victories-ttl .button {
+.ttl-with-button .button {
     margin: 0;
 }
+
+
+
